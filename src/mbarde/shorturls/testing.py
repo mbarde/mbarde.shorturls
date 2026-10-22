@@ -8,6 +8,7 @@ from plone.app.testing import PloneSandboxLayer
 from plone.testing.zope import WSGI_SERVER_FIXTURE
 
 import mbarde.shorturls
+import plone.restapi
 
 
 class MbardeShorturlsLayer(PloneSandboxLayer):
@@ -18,9 +19,11 @@ class MbardeShorturlsLayer(PloneSandboxLayer):
         # Load any other ZCML that is required for your tests.
         # The z3c.autoinclude feature is disabled in the Plone fixture base
         # layer.
+        self.loadZCML(package=plone.restapi)
         self.loadZCML(package=mbarde.shorturls)
 
     def setUpPloneSite(self, portal):
+        applyProfile(portal, "plone.restapi:default")
         applyProfile(portal, "mbarde.shorturls:default")
 
 
@@ -36,6 +39,12 @@ MBARDE_SHORTURLS_INTEGRATION_TESTING = IntegrationTesting(
 MBARDE_SHORTURLS_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(MBARDE_SHORTURLS_FIXTURE,),
     name="MbardeShorturlsLayer:FunctionalTesting",
+)
+
+
+MBARDE_SHORTURLS_RESTAPI_TESTING = FunctionalTesting(
+    bases=(MBARDE_SHORTURLS_FIXTURE, WSGI_SERVER_FIXTURE),
+    name="MbardeShorturlsLayer:RestApiTesting",
 )
 
 

@@ -1,7 +1,10 @@
+#--- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+#SOME DESCRIPTIVE TITLE.
+#FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 00:00+0000\n"
+"POT-Creation-Date: 2026-10-22 07:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,6 +17,79 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: mbarde.shorturls\n"
 
+#: ../content/short_url.py:74
+msgid "Clicks"
+msgstr ""
+
+#: ../content/short_url.py:82
+msgid "Created via API"
+msgstr ""
+
+#: ../profiles/default/types/ShortUrl.xml
+msgid "Edit"
+msgstr ""
+
+#: ../content/short_url.py:75
+msgid "How often the short URL has been used."
+msgstr ""
+
+#: ../configure.zcml:32
+msgid "Installs the mbarde.shorturls add-on."
+msgstr ""
+
+#: ../content/short_url.py:37
+msgid "Only http:// and https:// URLs are allowed."
+msgstr ""
+
+#: ../content/short_url.py:29
+msgid "Only letters (a-z, A-Z), digits, '-' and '_' are allowed."
+msgstr ""
+
+#: ../profiles/default/types/ShortUrl.xml
+msgid "Short URL"
+msgstr ""
+
+#: ../profiles/default/types/ShortUrl.xml
+msgid "Short URL redirecting to a target URL"
+msgstr ""
+
+#: ../content/short_url.py:55
+msgid "Suffix"
+msgstr ""
+
+#: ../content/short_url.py:67
+msgid "Target URL"
+msgstr ""
+
+#: ../content/short_url.py:68
+msgid "The URL the short URL redirects to."
+msgstr ""
+
+#: ../content/short_url.py:33
+msgid "This suffix is already in use."
+msgstr ""
+
+#: ../configure.zcml:41
+msgid "Uninstalls the mbarde.shorturls add-on."
+msgstr ""
+
+#: ../profiles/default/types/ShortUrl.xml
+msgid "View"
+msgstr ""
+
+#: ../configure.zcml:32
+msgid "mbarde.shorturls"
+msgstr ""
+
+#: ../configure.zcml:41
+msgid "mbarde.shorturls (uninstall)"
+msgstr ""
+
 #: ../browser/controlpanel.py:16
 msgid "mbarde.shorturls Settings"
+msgstr ""
+
+#. Default: "The part of the short URL after the base URL. Matched case-insensitively, so it has to be unique regardless of case."
+#: ../content/short_url.py:56
+msgid "suffix_description"
 msgstr ""

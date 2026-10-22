@@ -14,6 +14,8 @@
   <!--<includeDependencies
   package="." />-->
 
+  <include file="permissions.zcml" />
+
   <include package=".browser" />
 
   <include file="upgrades.zcml" />
@@ -39,6 +41,23 @@
   <utility
     factory=".setuphandlers.HiddenProfiles"
     name="mbarde.shorturls-hiddenprofiles"
+  />
+
+  <!-- lowercased suffix for case-insensitive lookups -->
+  <adapter
+    factory=".content.short_url.suffixIndexer"
+    name="shorturl_suffix"
+  />
+
+  <!-- suffix has to be unique: add/edit forms and plone.restapi -->
+  <adapter factory=".content.short_url.SuffixValidator" />
+  <adapter factory=".content.short_url.SuffixDeserializer" />
+
+  <!-- remember whether a short url was created via plone.restapi -->
+  <subscriber
+    for=".content.short_url.IShortUrl
+         zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    handler=".content.short_url.markCreatedViaApi"
   />
 
 </configure>

@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <object name="portal_catalog">
-  <!--<column
-  value="my_meta_column"/>-->
+  <!-- lowercased suffix, see content/short_url.py -->
+  <index name="shorturl_suffix" meta_type="FieldIndex">
+    <indexed_attr value="shorturl_suffix" />
+  </index>
 </object>
