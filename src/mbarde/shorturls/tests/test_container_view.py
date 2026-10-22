@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Default view of short url containers."""
 
+from datetime import date
 from DateTime import DateTime
 from mbarde.shorturls.testing import MBARDE_SHORTURLS_FUNCTIONAL_TESTING  # noqa
 from plone import api
@@ -85,6 +86,17 @@ class ShortUrlContainerViewTest(unittest.TestCase):
         self.assertIn('href="https://go.example.org/Alice1"', browser.contents)
         self.assertIn('href="https://www.plone.org/Alice1"', browser.contents)
         self.assertIn('href="http://nohost/plone/s/alice1"', browser.contents)
+
+    def test_last_clicked_column(self):
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        self.container["alice1"].last_clicked = date(2026, 10, 3)
+        transaction.commit()
+        browser = self.browser("alice")
+        browser.open(self.container.absolute_url())
+        self.assertEqual(
+            re.findall(r'class="text-nowrap last-clicked">([^<]*)<', browser.contents),
+            ["", "Oct 03, 2026"],
+        )
 
     def test_no_short_url_column_without_base_url(self):
         browser = self.browser("alice")

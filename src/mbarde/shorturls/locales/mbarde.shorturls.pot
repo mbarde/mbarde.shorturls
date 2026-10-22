@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 09:51+0000\n"
+"POT-Creation-Date: 2026-10-22 10:05+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: mbarde.shorturls\n"
 
-#: ../browser/templates/short_url_container_view.pt:32
+#: ../browser/templates/short_url_container_view.pt:31
 msgid "Active"
 msgstr ""
 
@@ -33,48 +33,48 @@ msgstr ""
 msgid "Base URL"
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:64
+#: ../browser/templates/short_url_container_view.pt:62
 #: ../browser/templates/short_url_view.pt:51
 #: ../content/short_url.py:134
 msgid "Clicks"
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:66
+#: ../browser/templates/short_url_container_view.pt:65
 msgid "Created"
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:65
+#: ../browser/templates/short_url_container_view.pt:64
 msgid "Created by"
 msgstr ""
 
-#: ../browser/templates/short_url_view.pt:55
-#: ../content/short_url.py:142
+#: ../browser/templates/short_url_view.pt:62
+#: ../content/short_url.py:149
 msgid "Created via API"
 msgstr ""
 
-#: ../browser/templates/short_url_view.pt:88
+#: ../browser/templates/short_url_view.pt:95
 msgid "Delete permanently"
 msgstr ""
 
-#: ../browser/templates/short_url_view.pt:70
+#: ../browser/templates/short_url_view.pt:77
 msgid "Disable"
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:35
+#: ../browser/templates/short_url_container_view.pt:33
 msgid "Disabled"
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:43
+#: ../browser/templates/short_url_container_view.pt:41
 msgid "Disabled short URLs don't redirect anymore, but keep their suffix reserved. Open one to enable it again."
 msgstr ""
 
-#: ../browser/templates/short_url_view.pt:62
+#: ../browser/templates/short_url_view.pt:69
 #: ../profiles/default/types/ShortUrl.xml
 #: ../profiles/default/types/ShortUrlContainer.xml
 msgid "Edit"
 msgstr ""
 
-#: ../browser/templates/short_url_view.pt:79
+#: ../browser/templates/short_url_view.pt:86
 msgid "Enable"
 msgstr ""
 
@@ -98,15 +98,25 @@ msgstr ""
 msgid "Installs the mbarde.shorturls add-on."
 msgstr ""
 
-#: ../content/short_url.py:49
+#: ../browser/templates/short_url_container_view.pt:63
+#: ../browser/templates/short_url_view.pt:55
+#: ../content/short_url.py:142
+msgid "Last clicked"
+msgstr ""
+
+#: ../browser/templates/short_url_view.pt:58
+msgid "Never"
+msgstr ""
+
+#: ../content/short_url.py:51
 msgid "Only http:// and https:// URLs are allowed."
 msgstr ""
 
-#: ../content/short_url.py:37
+#: ../content/short_url.py:39
 msgid "Only letters (a-z, A-Z), digits, '-' and '_' are allowed."
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:62
+#: ../browser/templates/short_url_container_view.pt:60
 #: ../browser/templates/short_url_view.pt:35
 #: ../profiles/default/types/ShortUrl.xml
 msgid "Short URL"
@@ -120,12 +130,12 @@ msgstr ""
 msgid "Short URL redirecting to a target URL"
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:61
-#: ../content/short_url.py:111
+#: ../browser/templates/short_url_container_view.pt:59
+#: ../content/short_url.py:113
 msgid "Suffix"
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:63
+#: ../browser/templates/short_url_container_view.pt:61
 #: ../browser/templates/short_url_view.pt:41
 #: ../content/short_url.py:127
 msgid "Target URL"
@@ -139,15 +149,19 @@ msgstr ""
 msgid "The base URL must not end with a '/'."
 msgstr ""
 
-#: ../content/short_url.py:53
+#: ../content/short_url.py:143
+msgid "The day the short URL has been used the last time."
+msgstr ""
+
+#: ../content/short_url.py:55
 msgid "The domain of this URL is not allowed."
 msgstr ""
 
-#: ../content/short_url.py:41
+#: ../content/short_url.py:43
 msgid "The suffix of a short URL can't be changed."
 msgstr ""
 
-#: ../browser/templates/short_url_container_view.pt:107
+#: ../browser/templates/short_url_container_view.pt:112
 msgid "There are no short URLs here."
 msgstr ""
 
@@ -155,7 +169,7 @@ msgstr ""
 msgid "This short URL is disabled: it doesn't redirect anymore, but its suffix stays reserved."
 msgstr ""
 
-#: ../content/short_url.py:45
+#: ../content/short_url.py:47
 msgid "This suffix is already in use."
 msgstr ""
 
@@ -168,7 +182,7 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: ../browser/templates/short_url_view.pt:56
+#: ../browser/templates/short_url_view.pt:63
 msgid "Yes"
 msgstr ""
 
@@ -205,11 +219,11 @@ msgid "mbarde.shorturls Settings"
 msgstr ""
 
 #. Default: "The part of the short URL after the base URL. Matched case-insensitively, so it has to be unique regardless of case. It can't be changed later."
-#: ../content/short_url.py:112
+#: ../content/short_url.py:114
 msgid "suffix_description"
 msgstr ""
 
 #. Default: "The domain of this URL is not allowed. Allowed domains (including their subdomains): ${domains}"
-#: ../content/short_url.py:56
+#: ../content/short_url.py:58
 msgid "target_url_domain_not_allowed"
 msgstr ""

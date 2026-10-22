@@ -51,6 +51,13 @@
               <td i18n:translate="">Clicks</td>
               <td id="clicks" tal:content="context/clicks" />
             </tr>
+            <tr>
+              <td i18n:translate="">Last clicked</td>
+              <td id="last-clicked" tal:define="lastClicked view/lastClicked">
+                <tal:date tal:condition="lastClicked" tal:content="lastClicked" />
+                <tal:never tal:condition="not:lastClicked" i18n:translate="">Never</tal:never>
+              </td>
+            </tr>
             <tr tal:condition="context/is_api">
               <td i18n:translate="">Created via API</td>
               <td i18n:translate="">Yes</td>

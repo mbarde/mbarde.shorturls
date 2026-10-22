@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
 from BTrees.Length import Length
+from datetime import date
 from mbarde.shorturls import _
+from persistent import Persistent
 from plone import api
 from plone.autoform import directives
 from plone.dexterity.content import Item
@@ -136,12 +138,52 @@ class IShortUrl(model.Schema):
         default=0,
     )
 
+    last_clicked = schema.Date(
+        title=_("Last clicked"),
+        description=_("The day the short URL has been used the last time."),
+        required=False,
+        readonly=True,
+    )
+
     is_api = schema.Bool(
         title=_("Created via API"),
         required=False,
         readonly=True,
         default=False,
     )
+
+
+class ClickCounter(Persistent):
+    """Number of clicks and day of the last click of a short url.
+
+    A separate persistent object, so a click only writes this tiny record
+    (not the short url) - including the day costs no additional write. It
+    resolves conflicts of concurrent clicks (instead of failing with a
+    ConflictError when popular short urls get clicked simultaneously): clicks
+    get added up, the later day wins.
+    """
+
+    clicks = 0
+    # date.toordinal() of the day of the last click, 0 if never clicked
+    last_clicked = 0
+
+    def __init__(self, clicks=0, last_clicked=0):
+        self.clicks = clicks
+        self.last_clicked = last_clicked
+
+    def __getstate__(self):
+        return (self.clicks, self.last_clicked)
+
+    def __setstate__(self, state):
+        self.clicks, self.last_clicked = state
+
+    def _p_resolveConflict(self, old, saved, new):
+        return (saved[0] + new[0] - old[0], max(saved[1], new[1]))
+
+    def click(self, day):
+        self.clicks += 1
+        if self.last_clicked != day.toordinal():
+            self.last_clicked = day.toordinal()
 
 
 class ISuffixField(Interface):
@@ -165,31 +207,45 @@ class ShortUrl(Item):
     def title(self, value):
         pass
 
-    # clicks are counted in a BTrees.Length, a separate persistent object
-    # which resolves conflicts of concurrent increments (instead of failing
-    # with a ConflictError when popular short urls get clicked simultaneously)
+    # clicks and the day of the last click are stored in a ClickCounter
     @property
     def clicks(self):
-        counter = getattr(self, "_clicks", None)
-        return counter() if counter is not None else 0
+        return self._clickCounter().clicks
 
     @clicks.setter
     def clicks(self, value):
-        counter = getattr(self, "_clicks", None)
-        if counter is None:
-            self._clicks = Length(value or 0)
-        else:
-            counter.set(value or 0)
+        self._writableClickCounter().clicks = value or 0
 
-    def countClick(self, request=None):
-        """Increment the clicks, marked as safe write for plone.protect (the
-        redirect is a GET request)."""
-        if getattr(self, "_clicks", None) is None:
-            self._clicks = Length(0)
+    @property
+    def last_clicked(self):
+        day = self._clickCounter().last_clicked
+        return date.fromordinal(day) if day else None
+
+    @last_clicked.setter
+    def last_clicked(self, value):
+        self._writableClickCounter().last_clicked = value.toordinal() if value else 0
+
+    def _clickCounter(self):
+        counter = getattr(self, "_clicks", None)
+        if isinstance(counter, Length):
+            # counter of older versions (clicks only)
+            return ClickCounter(counter())
+        return counter if counter is not None else ClickCounter()
+
+    def _writableClickCounter(self, request=None):
+        counter = getattr(self, "_clicks", None)
+        if not isinstance(counter, ClickCounter):
+            self._clicks = self._clickCounter()
             # the new counter has no oid yet, its creation modifies self
             safeWrite(self, request)
-        self._clicks.change(1)
-        safeWrite(self._clicks, request)
+        return self._clicks
+
+    def countClick(self, request=None, today=None):
+        """Count a click, marked as safe write for plone.protect (the
+        redirect is a GET request)."""
+        counter = self._writableClickCounter(request)
+        counter.click(today or date.today())
+        safeWrite(counter, request)
 
 
 def normalizeSuffix(suffix):

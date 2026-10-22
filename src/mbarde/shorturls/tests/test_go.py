@@ -2,6 +2,9 @@
 """@@go/<suffix> redirects to the target url and counts the click."""
 
 from BTrees.Length import Length
+from datetime import date
+from mbarde.shorturls.content.short_url import ClickCounter
+from mbarde.shorturls.content.short_url import ShortUrl
 from mbarde.shorturls.testing import MBARDE_SHORTURLS_FUNCTIONAL_TESTING  # noqa
 from plone import api
 from plone.app.testing import login
@@ -10,7 +13,6 @@ from plone.app.testing import TEST_USER_ID
 from plone.testing.zope import Browser
 from ZODB.FileStorage import FileStorage
 
-import persistent.mapping
 import tempfile
 import transaction
 import unittest
@@ -58,10 +60,12 @@ class GoViewTest(unittest.TestCase):
         self.assertEqual(browser.headers["location"], "https://www.plone.org/target?a=1")
 
     def test_redirect_anonymous(self):
+        self.assertIsNone(self.shorturl.last_clicked)
         browser = self.go("/AnorgChem")
         self.assertRedirected(browser)
         self.assertEqual(browser.headers["cache-control"], "no-store")
         self.assertEqual(self.clicks(), 1)
+        self.assertEqual(self.container["anorgchem"].last_clicked, date.today())
 
     def test_redirect_case_insensitive(self):
         for suffix in ("anorgchem", "ANORGCHEM", "aNoRgChEm"):
@@ -138,40 +142,80 @@ class GoViewTest(unittest.TestCase):
         browser = self.browser(("alice", "secret-alice"))
         browser.open(self.container.absolute_url() + "/anorgchem")
         self.assertIn('<td id="clicks">2</td>', browser.contents)
+        self.assertIn(api.portal.get_localized_time(datetime=date.today()), browser.contents)
 
 
 class ClicksTest(unittest.TestCase):
 
-    def test_set_clicks(self):
-        # e.g. when migrating the clicks of the legacy system
-        from mbarde.shorturls.content.short_url import ShortUrl
-
+    def test_clicks_and_last_clicked(self):
         obj = ShortUrl()
         self.assertEqual(obj.clicks, 0)
+        self.assertIsNone(obj.last_clicked)
+        obj.countClick(today=date(2026, 10, 1))
+        obj.countClick(today=date(2026, 10, 1))
+        obj.countClick(today=date(2026, 10, 3))
+        self.assertEqual(obj.clicks, 3)
+        self.assertEqual(obj.last_clicked, date(2026, 10, 3))
+
+    def test_set(self):
+        # e.g. when migrating clicks / last click of the legacy system
+        obj = ShortUrl()
         obj.clicks = 41
-        obj.countClick()
+        obj.last_clicked = date(2020, 5, 17)
+        self.assertEqual(obj.clicks, 41)
+        self.assertEqual(obj.last_clicked, date(2020, 5, 17))
+        obj.countClick(today=date(2026, 10, 1))
         self.assertEqual(obj.clicks, 42)
-        self.assertIsInstance(obj._clicks, Length)
+        self.assertEqual(obj.last_clicked, date(2026, 10, 1))
+        obj.last_clicked = None
+        self.assertIsNone(obj.last_clicked)
+
+    def test_counter_of_older_versions(self):
+        obj = ShortUrl()
+        obj._clicks = Length(7)
+        self.assertEqual(obj.clicks, 7)
+        self.assertIsNone(obj.last_clicked)
+        obj.countClick(today=date(2026, 10, 1))
+        self.assertIsInstance(obj._clicks, ClickCounter)
+        self.assertEqual(obj.clicks, 8)
+        self.assertEqual(obj.last_clicked, date(2026, 10, 1))
+
+    def withDB(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        db = ZODB.DB(FileStorage(tmp.name + "/Data.fs"))
+        self.addCleanup(db.close)
+        return db
+
+    def test_click_only_writes_counter(self):
+        # a click (also on a new day) doesn't write the short url itself
+        db = self.withDB()
+        tm = transaction.TransactionManager()
+        root = db.open(transaction_manager=tm).root()
+        root["shorturl"] = obj = ShortUrl()
+        obj.countClick(today=date(2026, 10, 1))
+        tm.commit()
+        obj.countClick(today=date(2026, 10, 2))
+        self.assertFalse(obj._p_changed)
+        self.assertTrue(obj._clicks._p_changed)
+        tm.commit()
 
     def test_concurrent_clicks_dont_conflict(self):
         # two requests counting a click on the same short url at the same time
-        with tempfile.TemporaryDirectory() as tmp:
-            db = ZODB.DB(FileStorage(tmp + "/Data.fs"))
-            try:
-                tm1 = transaction.TransactionManager()
-                tm2 = transaction.TransactionManager()
-                conn1 = db.open(transaction_manager=tm1)
-                root1 = conn1.root()
-                root1["counter"] = persistent.mapping.PersistentMapping(clicks=Length(0))
-                tm1.commit()
+        db = self.withDB()
+        tm1 = transaction.TransactionManager()
+        tm2 = transaction.TransactionManager()
+        root1 = db.open(transaction_manager=tm1).root()
+        root1["shorturl"] = ShortUrl()
+        root1["shorturl"].countClick(today=date(2026, 10, 1))
+        tm1.commit()
 
-                conn2 = db.open(transaction_manager=tm2)
-                conn2.root()["counter"]["clicks"].change(1)
-                root1["counter"]["clicks"].change(1)
-                tm2.commit()
-                tm1.commit()  # would raise a ConflictError with a plain int
+        root2 = db.open(transaction_manager=tm2).root()
+        root2["shorturl"].countClick(today=date(2026, 10, 3))
+        root1["shorturl"].countClick(today=date(2026, 10, 2))
+        tm2.commit()
+        tm1.commit()  # would raise a ConflictError without conflict resolution
 
-                tm1.begin()
-                self.assertEqual(root1["counter"]["clicks"](), 2)
-            finally:
-                db.close()
+        tm1.begin()
+        self.assertEqual(root1["shorturl"].clicks, 3)
+        self.assertEqual(root1["shorturl"].last_clicked, date(2026, 10, 3))

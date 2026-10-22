@@ -20,6 +20,10 @@ class ShortUrlView(BrowserView):
             return None
         return base_url.rstrip("/") + "/" + self.context.suffix
 
+    def lastClicked(self):
+        last_clicked = self.context.last_clicked
+        return api.portal.get_localized_time(datetime=last_clicked) if last_clicked else None
+
     def isDisabled(self):
         return api.content.get_state(self.context) == "disabled"
 

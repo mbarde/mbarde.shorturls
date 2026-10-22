@@ -60,6 +60,7 @@
                     <th tal:condition="baseUrl" i18n:translate="">Short URL</th>
                     <th i18n:translate="">Target URL</th>
                     <th class="text-end" i18n:translate="">Clicks</th>
+                    <th i18n:translate="">Last clicked</th>
                     <th i18n:translate="">Created by</th>
                     <th i18n:translate="">Created</th>
                   </tr>
@@ -90,6 +91,10 @@
                         />
                       </td>
                       <td class="text-end" tal:content="obj/clicks" />
+                      <td
+                        class="text-nowrap last-clicked"
+                        tal:content="python:view.localizedDate(obj.last_clicked)"
+                      />
                       <td tal:content="item/Creator" />
                       <td
                         class="text-nowrap"

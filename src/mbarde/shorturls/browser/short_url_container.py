@@ -51,5 +51,8 @@ class ShortUrlContainerView(FolderView):
         base_url = api.portal.get_registry_record("mbarde.shorturls.base_url", default=None)
         return base_url.rstrip("/") if base_url else None
 
+    def localizedDate(self, value):
+        return api.portal.get_localized_time(datetime=value) if value else ""
+
     def canAdd(self):
         return api.user.has_permission("mbarde.shorturls: Add ShortUrl", obj=self.context)

@@ -219,6 +219,8 @@ class ShortUrlViewBrowserTest(unittest.TestCase):
         browser.open(self.url("/alice"))
         self.assertIn('href="https://go.example.org/alice"', browser.contents)
         self.assertIn('href="https://www.plone.org"', browser.contents)
+        # never clicked
+        self.assertRegex(browser.contents, r'id="last-clicked">\s*Never\s*</td>')
 
     def test_view_base_url_with_trailing_slash(self):
         # only the control panel form refuses a trailing slash

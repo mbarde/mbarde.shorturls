@@ -189,12 +189,18 @@ class ShortUrlRestApiTest(unittest.TestCase):
 
     def test_readonly_fields_ignored(self):
         response = self.post(
-            suffix="sneaky", target_url="https://www.plone.org", clicks=1000, is_api=False
+            suffix="sneaky",
+            target_url="https://www.plone.org",
+            clicks=1000,
+            last_clicked="2099-01-01",
+            is_api=False,
         )
         self.assertEqual(response.status_code, 201, response.text)
+        self.assertIsNone(response.json()["last_clicked"])
         transaction.begin()
         obj = self.portal.s["sneaky"]
         self.assertEqual(obj.clicks, 0)
+        self.assertIsNone(obj.last_clicked)
         self.assertTrue(obj.is_api)
 
     def test_duplicate_suffix_rejected(self):
