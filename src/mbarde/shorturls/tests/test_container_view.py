@@ -120,3 +120,64 @@ class ShortUrlContainerViewTest(unittest.TestCase):
         second_page = self.listedSuffixes(browser)
         self.assertEqual(len(second_page), 7)
         self.assertEqual(len(set(first_page + second_page)), 27)
+
+    def disable(self, suffix):
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        login(self.portal, "test-user")
+        api.content.transition(obj=self.container[suffix.lower()], transition="disable")
+        logout()
+        transaction.commit()
+
+    def tabCount(self, browser, state):
+        match = re.search(
+            r'id="short-url-tab-{0}".*?<span class="badge[^>]*>(\d+)</span>'.format(state),
+            browser.contents,
+            re.S,
+        )
+        return int(match.group(1))
+
+    def test_disabled_tab(self):
+        self.disable("alice2")
+        browser = self.browser("alice")
+        browser.open(self.container.absolute_url())
+        self.assertEqual(self.listedSuffixes(browser), ["Alice1"])
+        self.assertEqual(self.tabCount(browser, "active"), 1)
+        self.assertEqual(self.tabCount(browser, "disabled"), 1)
+        self.assertNotIn('id="short-urls-disabled-info"', browser.contents)
+
+        browser.getLink(id="short-url-tab-disabled").click()
+        self.assertEqual(self.listedSuffixes(browser), ["alice2"])
+        self.assertIn('id="short-urls-disabled-info"', browser.contents)
+
+    def test_disabled_tab_only_own(self):
+        self.disable("alice2")
+        browser = self.browser("bob")
+        browser.open(self.container.absolute_url() + "?state=disabled")
+        self.assertEqual(self.listedSuffixes(browser), [])
+        self.assertIn('id="short-urls-empty"', browser.contents)
+        self.assertEqual(self.tabCount(browser, "disabled"), 0)
+        browser = self.browser("moderator")
+        browser.open(self.container.absolute_url() + "?state=disabled")
+        self.assertEqual(self.listedSuffixes(browser), ["alice2"])
+
+    def test_invalid_state_shows_active(self):
+        self.disable("alice2")
+        browser = self.browser("alice")
+        browser.open(self.container.absolute_url() + "?state=nonsense")
+        self.assertEqual(self.listedSuffixes(browser), ["Alice1"])
+
+    def test_disabled_tab_batching(self):
+        for i in range(22):
+            self.createShortUrl("alice", "off{0:02d}".format(i), day=10 + i % 20)
+            setRoles(self.portal, TEST_USER_ID, ["Manager"])
+            login(self.portal, "test-user")
+            api.content.transition(obj=self.container["off{0:02d}".format(i)], transition="disable")
+        logout()
+        transaction.commit()
+        browser = self.browser("alice")
+        browser.open(self.container.absolute_url() + "?state=disabled")
+        self.assertEqual(len(self.listedSuffixes(browser)), 20)
+        # the batch navigation keeps the tab
+        browser.getLink(url="b_start:int=20").click()
+        self.assertIn("state=disabled", browser.url)
+        self.assertEqual(len(self.listedSuffixes(browser)), 2)

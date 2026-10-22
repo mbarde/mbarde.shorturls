@@ -17,8 +17,35 @@
             id="short-url-add"
             tal:attributes="href string:${context/absolute_url}/++add++ShortUrl"
             i18n:translate=""
-            >Add short URL</a
-          >
+          >Add short URL</a>
+        </p>
+
+        <ul class="nav nav-tabs mb-3" id="short-url-tabs">
+          <li class="nav-item" tal:repeat="tab view/tabs">
+            <a
+              class="nav-link"
+              tal:attributes="href tab/url;
+                              id string:short-url-tab-${tab/state};
+                              class python:'nav-link active' if tab['selected'] else 'nav-link'"
+            >
+              <tal:active tal:condition="python:tab['state'] == 'active'" i18n:translate=""
+              >Active</tal:active>
+              <tal:disabled tal:condition="python:tab['state'] == 'disabled'" i18n:translate=""
+              >
+                Disabled</tal:disabled>
+              <span class="badge bg-secondary" tal:content="tab/count">0</span>
+            </a>
+          </li>
+        </ul>
+
+        <p
+          class="discreet"
+          id="short-urls-disabled-info"
+          tal:condition="python:view.state == 'disabled'"
+          i18n:translate=""
+        >
+          Disabled short URLs don't redirect anymore, but keep their suffix
+          reserved. Open one to enable it again.
         </p>
 
         <tal:results tal:define="batch view/batch; baseUrl view/baseUrl">
@@ -52,12 +79,14 @@
                           tal:define="shortUrl string:${baseUrl}/${obj/suffix}"
                           tal:attributes="href shortUrl"
                           tal:content="shortUrl"
+                          target="_blank"
                         />
                       </td>
                       <td class="text-break">
                         <a
                           tal:attributes="href obj/target_url"
                           tal:content="obj/target_url"
+                          target="_blank"
                         />
                       </td>
                       <td class="text-end" tal:content="obj/clicks" />
@@ -81,7 +110,7 @@
             tal:condition="not:batch"
             i18n:translate=""
           >
-            There are no short URLs yet.
+            There are no short URLs here.
           </p>
         </tal:results>
       </metal:block>

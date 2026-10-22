@@ -19,6 +19,16 @@
 
         <div tal:replace="structure provider:plone.abovecontentbody" />
 
+        <div
+          class="alert alert-warning"
+          id="short-url-disabled"
+          tal:condition="view/isDisabled"
+          i18n:translate=""
+        >
+          This short URL is disabled: it doesn't redirect anymore, but its
+          suffix stays reserved.
+        </div>
+
         <table class="listing table table-striped" id="short-url-details">
           <tbody>
             <tr tal:define="shortUrl view/shortUrl" tal:condition="shortUrl">
@@ -59,11 +69,29 @@
           >
           <a
             class="btn btn-danger"
+            id="short-url-disable"
+            tal:define="url python:view.transitionUrl('disable')"
+            tal:condition="url"
+            tal:attributes="href url"
+            i18n:translate=""
+            >Disable</a
+          >
+          <a
+            class="btn btn-success"
+            id="short-url-enable"
+            tal:define="url python:view.transitionUrl('enable')"
+            tal:condition="url"
+            tal:attributes="href url"
+            i18n:translate=""
+            >Enable</a
+          >
+          <a
+            class="btn btn-outline-danger"
             id="short-url-delete"
             tal:condition="view/canDelete"
             tal:attributes="href string:${context/absolute_url}/delete_confirmation"
             i18n:translate=""
-            >Delete</a
+            >Delete permanently</a
           >
         </div>
 

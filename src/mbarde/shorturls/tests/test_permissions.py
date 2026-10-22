@@ -69,15 +69,42 @@ class ShortUrlPermissionsTest(unittest.TestCase):
         self.assertTrue(self.can("mbarde.shorturls: Add ShortUrl", self.container))
         self.assertTrue(self.can("List folder contents", self.container))
 
-    def test_owner_can_view_edit_delete_own(self):
+    def test_owner_can_view_edit_disable_enable_own(self):
         login(self.portal, "alice")
         self.assertTrue(self.can("View", self.alices))
         self.assertTrue(self.can("Modify portal content", self.alices))
-        self.assertTrue(self.can("Delete objects", self.alices))
-        # Plone's own delete action needs "Delete objects" on the container,
-        # owners use the delete button of the short url view instead (see
-        # ShortUrlViewBrowserTest)
-        self.assertFalse(self.deleteActionOffered(self.alices))
+        api.content.transition(obj=self.alices, transition="disable")
+        self.assertEqual(api.content.get_state(self.alices), "disabled")
+        # still visible (and editable) to re-enable it
+        self.assertTrue(self.can("View", self.alices))
+        self.assertTrue(self.can("Modify portal content", self.alices))
+        api.content.transition(obj=self.alices, transition="enable")
+        self.assertEqual(api.content.get_state(self.alices), "active")
+
+    def test_owner_cannot_delete(self):
+        # deleting would free the suffix - users disable instead
+        login(self.portal, "alice")
+        for state in ("active", "disabled"):
+            api.content.transition(obj=self.alices, to_state=state)
+            self.assertFalse(self.can("Delete objects", self.alices))
+            self.assertFalse(self.deleteActionOffered(self.alices))
+            with self.assertRaises(Unauthorized):
+                self.container.manage_delObjects([self.alices.getId()])
+
+    def test_cannot_disable_others(self):
+        login(self.portal, "alice")
+        with self.assertRaises(api.exc.InvalidParameterError):
+            api.content.transition(obj=self.bobs, transition="disable")
+        self.assertEqual(api.content.get_state(self.bobs), "active")
+
+    def test_admins_can_delete(self):
+        setRoles(self.portal, TEST_USER_ID, ["Site Administrator"])
+        login(self.portal, "test-user")
+        for obj in (self.alices, self.bobs):
+            self.assertTrue(self.can("Delete objects", obj))
+        api.content.transition(obj=self.bobs, transition="disable")
+        self.container.manage_delObjects([self.alices.getId(), self.bobs.getId()])
+        self.assertEqual(list(self.container.objectIds()), [])
 
     def test_other_users_short_urls_invisible(self):
         login(self.portal, "alice")
@@ -96,12 +123,14 @@ class ShortUrlPermissionsTest(unittest.TestCase):
         # redirecting does not depend on View
         self.assertEqual(findShortUrlBySuffix("alices").UID, self.alices.UID())
 
-    def test_editor_on_container_sees_and_edits_all(self):
+    def test_editor_on_container_sees_edits_and_disables_all(self):
         login(self.portal, "moderator")
         self.assertEqual(self.listedSuffixes(), ["alices", "bobs"])
         for obj in (self.alices, self.bobs):
             self.assertTrue(self.can("Modify portal content", obj))
-            self.assertTrue(self.can("Delete objects", obj))
+            self.assertFalse(self.can("Delete objects", obj))
+            api.content.transition(obj=obj, transition="disable")
+            api.content.transition(obj=obj, transition="enable")
 
     def test_users_cannot_edit_container(self):
         login(self.portal, "alice")
@@ -213,25 +242,41 @@ class ShortUrlViewBrowserTest(unittest.TestCase):
         transaction.begin()
         self.assertEqual(self.container["alice"].target_url, "https://plone.org/new")
 
-    def test_owner_deletes_via_button(self):
+    def test_owner_disables_and_enables_via_buttons(self):
         browser = self.browser("alice")
+        browser.open(self.url("/alice"))
+        self.assertNotIn('id="short-url-delete"', browser.contents)
+        self.assertNotIn('id="short-url-disabled"', browser.contents)
+        browser.getLink(id="short-url-disable").click()
+        transaction.begin()
+        self.assertEqual(api.content.get_state(self.container["alice"]), "disabled")
+        self.assertEqual(api.content.get_state(self.container["bob"]), "active")
+
+        browser.open(self.url("/alice"))
+        self.assertIn('id="short-url-disabled"', browser.contents)
+        self.assertNotIn('id="short-url-disable"', browser.contents)
+        browser.getLink(id="short-url-enable").click()
+        transaction.begin()
+        self.assertEqual(api.content.get_state(self.container["alice"]), "active")
+
+    def test_admin_deletes_via_button(self):
+        browser = self.browser(SITE_OWNER_NAME, SITE_OWNER_PASSWORD)
         browser.open(self.url("/alice"))
         browser.getLink(id="short-url-delete").click()
         browser.getControl(name="form.buttons.Delete").click()
-        self.assertEqual(browser.url, self.url(""))
         transaction.begin()
         self.assertNotIn("alice", self.container)
-        self.assertIn("bob", self.container)
 
-    def test_user_cannot_delete_others(self):
-        self.assertNoAccess(self.browser("alice"), "/bob/delete_confirmation")
-        self.assertExists("/bob")
+    def test_user_cannot_delete(self):
+        for path in ("/alice", "/bob"):
+            self.assertNoAccess(self.browser("alice"), path + "/delete_confirmation")
+            self.assertExists(path)
 
     def test_reader_sees_no_buttons(self):
         browser = self.browser("reader")
         browser.open(self.url("/alice"))
-        self.assertNotIn('id="short-url-edit"', browser.contents)
-        self.assertNotIn('id="short-url-delete"', browser.contents)
+        for button in ("edit", "disable", "enable", "delete"):
+            self.assertNotIn('id="short-url-{0}"'.format(button), browser.contents)
 
     def test_user_cannot_delete_container(self):
         self.assertNoAccess(self.browser("alice"), "/delete_confirmation")

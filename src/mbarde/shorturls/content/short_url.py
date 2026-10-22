@@ -3,6 +3,7 @@ from AccessControl import Unauthorized
 from BTrees.Length import Length
 from mbarde.shorturls import _
 from plone import api
+from plone.autoform import directives
 from plone.dexterity.content import Item
 from plone.indexer import indexer
 from plone.protect.utils import safeWrite
@@ -14,6 +15,7 @@ from plone.supermodel import model
 from plone.uuid.interfaces import IUUID
 from urllib.parse import urlsplit
 from z3c.form import validator
+from z3c.form.interfaces import IEditForm
 from zope import schema
 from zope.component import adapter
 from zope.component import queryUtility
@@ -33,6 +35,10 @@ SUFFIX_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
 
 class InvalidSuffix(schema.ValidationError):
     __doc__ = _("Only letters (a-z, A-Z), digits, '-' and '_' are allowed.")
+
+
+class SuffixNotChangeable(schema.ValidationError):
+    __doc__ = _("The suffix of a short URL can't be changed.")
 
 
 class SuffixInUse(schema.ValidationError):
@@ -106,12 +112,14 @@ class IShortUrl(model.Schema):
         description=_(
             "suffix_description",
             default="The part of the short URL after the base URL. Matched "
-            "case-insensitively, so it has to be unique regardless of case.",
+            "case-insensitively, so it has to be unique regardless of case. "
+            "It can't be changed later.",
         ),
         required=True,
         max_length=100,
         constraint=isValidSuffix,
     )
+    directives.mode(IEditForm, suffix="display")
 
     target_url = schema.URI(
         title=_("Target URL"),
@@ -234,10 +242,17 @@ validator.WidgetValidatorDiscriminators(SuffixValidator, field=IShortUrl["suffix
 @adapter(ISuffixField, IShortUrl, IBrowserRequest)
 class SuffixDeserializer(TextLineFieldDeserializer):
     """Unique suffix check for plone.restapi, which doesn't run z3c.form
-    validators (only field validation via deserializers and invariants)."""
+    validators (only field validation via deserializers and invariants).
+
+    Also refuses changing the suffix of an existing short url (the edit form
+    only displays it). Sending the unchanged suffix is fine.
+    """
 
     def __call__(self, value):
         value = super().__call__(value)
+        current = self.context.suffix
+        if current and value != current:
+            raise SuffixNotChangeable(value)
         checkSuffixAvailable(self.context, value)
         return value
 

@@ -98,6 +98,21 @@ class GoViewTest(unittest.TestCase):
             self.assertEqual(browser.headers["status"], "404 Not Found", path)
         self.assertEqual(self.clicks(), 0)
 
+    def test_disabled(self):
+        api.portal.set_registry_record(
+            "mbarde.shorturls.fallback_target_url", "https://www.example.org/not-found"
+        )
+        api.content.transition(obj=self.shorturl, transition="disable")
+        transaction.commit()
+        browser = self.go("/AnorgChem")
+        self.assertEqual(browser.headers["location"], "https://www.example.org/not-found")
+        self.assertEqual(self.clicks(), 0)
+
+        api.content.transition(obj=self.container["anorgchem"], transition="enable")
+        transaction.commit()
+        self.assertRedirected(self.go("/AnorgChem"))
+        self.assertEqual(self.clicks(), 1)
+
     def test_virtual_hosting(self):
         # the rewrite rule documented in the README (real Zope instances have
         # a VirtualHostMonster by default, the test fixture doesn't)

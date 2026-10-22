@@ -14,6 +14,7 @@ from plone.app.testing import SITE_OWNER_PASSWORD
 from plone.app.testing import TEST_USER_ID
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.testing.zope import Browser
+from urllib.parse import urlencode
 from z3c.form.interfaces import IValidator
 from zope.component import createObject
 from zope.component import getMultiAdapter
@@ -137,6 +138,13 @@ class ShortUrlIntegrationTest(unittest.TestCase):
                 self.validateSuffix(self.folder, value)
         self.validateSuffix(self.folder, "free")
 
+    def test_disabled_suffix_stays_reserved(self):
+        obj = self.createShortUrl("Reserved")
+        api.content.transition(obj=obj, transition="disable")
+        for value in ("Reserved", "reserved"):
+            with self.assertRaises(SuffixInUse):
+                self.validateSuffix(self.folder, value)
+
     def test_suffix_unique_on_edit(self):
         obj = self.createShortUrl("mine")
         other = self.createShortUrl("other")
@@ -195,6 +203,28 @@ class ShortUrlRestApiTest(unittest.TestCase):
         self.assertEqual(response.status_code, 400, response.text)
         self.assertIn("already in use", response.text)
 
+    def test_owner_cannot_delete_but_disable(self):
+        api.user.create(email="alice@example.org", username="alice", password="secret-alice")
+        transaction.commit()
+        alice = requests.Session()
+        self.addCleanup(alice.close)
+        alice.headers.update({"Accept": "application/json"})
+        alice.auth = ("alice", "secret-alice")
+        response = alice.post(
+            self.portal.absolute_url() + "/s",
+            json={"@type": "ShortUrl", "suffix": "alices", "target_url": "https://a.org"},
+        )
+        self.assertEqual(response.status_code, 201, response.text)
+        url = response.json()["@id"]
+
+        response = alice.delete(url)
+        self.assertIn(response.status_code, (401, 403), response.text)
+        response = alice.post(url + "/@workflow/disable")
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()["review_state"], "disabled")
+        response = alice.post(url + "/@workflow/enable")
+        self.assertEqual(response.json()["review_state"], "active")
+
     def test_invalid_target_url_rejected(self):
         response = self.post(suffix="evil", target_url="javascript:alert(1)")
         self.assertEqual(response.status_code, 400, response.text)
@@ -237,3 +267,107 @@ class ShortUrlAddFormTest(unittest.TestCase):
         self.assertIn("This suffix is already in use.", self.browser.contents)
         transaction.begin()
         self.assertEqual(len(self.portal.s.objectIds()), 1)
+
+
+class SuffixNotChangeableFormTest(unittest.TestCase):
+    """Suffix can't be changed after creation."""
+
+    layer = MBARDE_SHORTURLS_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        container = api.content.create(container=self.portal, type="ShortUrlContainer", id="s")
+        self.obj = api.content.create(
+            container=container,
+            type="ShortUrl",
+            title="fixed",
+            suffix="fixed",
+            target_url="https://www.plone.org",
+        )
+        transaction.commit()
+        self.browser = Browser(self.layer["app"])
+        self.browser.handleErrors = False
+        self.browser.addHeader(
+            "Authorization", "Basic {0}:{1}".format(SITE_OWNER_NAME, SITE_OWNER_PASSWORD)
+        )
+
+    def test_add_form_suffix_editable(self):
+        self.browser.open(self.portal.absolute_url() + "/s/++add++ShortUrl")
+        self.assertTrue(self.browser.getControl(name="form.widgets.suffix"))
+
+    def test_edit_form_suffix_displayed_only(self):
+        self.browser.open(self.obj.absolute_url() + "/edit")
+        with self.assertRaises(LookupError):
+            self.browser.getControl(name="form.widgets.suffix")
+        self.assertIn("fixed", self.browser.contents)
+        self.browser.getControl(name="form.widgets.target_url").value = "https://plone.org/new"
+        self.browser.getControl(name="form.buttons.save").click()
+        transaction.begin()
+        self.assertEqual(self.obj.target_url, "https://plone.org/new")
+        self.assertEqual(self.obj.suffix, "fixed")
+
+    def test_edit_form_forged_suffix_ignored(self):
+        self.browser.open(self.obj.absolute_url() + "/edit")
+        authenticator = self.browser.getControl(name="_authenticator").value
+        self.browser.post(
+            self.obj.absolute_url() + "/@@edit",
+            urlencode(
+                {
+                    "form.widgets.suffix": "hijacked",
+                    "form.widgets.target_url": "https://plone.org/new",
+                    "form.buttons.save": "Save",
+                    "_authenticator": authenticator,
+                }
+            ),
+        )
+        transaction.begin()
+        self.assertEqual(self.obj.target_url, "https://plone.org/new")
+        self.assertEqual(self.obj.suffix, "fixed")
+        self.assertIsNone(findShortUrlBySuffix("hijacked"))
+
+
+class SuffixNotChangeableRestApiTest(unittest.TestCase):
+
+    layer = MBARDE_SHORTURLS_RESTAPI_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        container = api.content.create(container=self.portal, type="ShortUrlContainer", id="s")
+        self.obj = api.content.create(
+            container=container,
+            type="ShortUrl",
+            title="fixed",
+            suffix="fixed",
+            target_url="https://www.plone.org",
+        )
+        transaction.commit()
+
+    def patch(self, **data):
+        return requests.patch(
+            self.obj.absolute_url(),
+            json=data,
+            headers={"Accept": "application/json"},
+            auth=(SITE_OWNER_NAME, SITE_OWNER_PASSWORD),
+        )
+
+    def test_change_refused(self):
+        for suffix in ("other", "FIXED"):
+            response = self.patch(suffix=suffix)
+            self.assertEqual(response.status_code, 400, response.text)
+            self.assertIn("can't be changed", response.text)
+        transaction.begin()
+        self.assertEqual(self.obj.suffix, "fixed")
+
+    def test_unchanged_suffix_accepted(self):
+        response = self.patch(suffix="fixed", target_url="https://plone.org/new")
+        self.assertEqual(response.status_code, 204, response.text)
+        transaction.begin()
+        self.assertEqual(self.obj.target_url, "https://plone.org/new")
+
+    def test_target_url_editable(self):
+        response = self.patch(target_url="https://plone.org/new")
+        self.assertEqual(response.status_code, 204, response.text)
+        transaction.begin()
+        self.assertEqual(self.obj.target_url, "https://plone.org/new")

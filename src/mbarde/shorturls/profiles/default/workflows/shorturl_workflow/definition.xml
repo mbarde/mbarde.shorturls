@@ -3,7 +3,7 @@
   i18n:domain="plone"
   workflow_id="shorturl_workflow"
   title="Short URL Workflow"
-  description="Short URLs are only visible to and editable by their owners (and Editors / Readers of the folder)"
+  description="Short URLs are only visible to and editable / disableable by their owners (and Editors / Readers of the folder)"
   state_variable="review_state"
   initial_state="active">
   <permission>Access contents information</permission>
@@ -11,10 +11,15 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
+  <!-- Deleting a short url would free its suffix for others - old shared /
+       printed links would then lead to their target. So users (and
+       moderators) "delete" short urls by disabling them: they stop
+       redirecting, but keep their suffix reserved. Owners can re-enable them.
+       Only admins can really delete them. -->
   <state state_id="active" title="Active" i18n:attributes="title">
     <description>The short URL redirects to its target URL</description>
-    <permission-map name="Access contents information"
-      acquired="False">
+    <exit-transition transition_id="disable" />
+    <permission-map name="Access contents information" acquired="False">
       <permission-role>Owner</permission-role>
       <permission-role>Editor</permission-role>
       <permission-role>Reader</permission-role>
@@ -22,13 +27,10 @@
       <permission-role>Site Administrator</permission-role>
     </permission-map>
     <permission-map name="Delete objects" acquired="False">
-      <permission-role>Owner</permission-role>
-      <permission-role>Editor</permission-role>
       <permission-role>Manager</permission-role>
       <permission-role>Site Administrator</permission-role>
     </permission-map>
-    <permission-map name="Modify portal content"
-      acquired="False">
+    <permission-map name="Modify portal content" acquired="False">
       <permission-role>Owner</permission-role>
       <permission-role>Editor</permission-role>
       <permission-role>Manager</permission-role>
@@ -42,6 +44,55 @@
       <permission-role>Site Administrator</permission-role>
     </permission-map>
   </state>
+
+  <state state_id="disabled" title="Disabled" i18n:attributes="title">
+    <description>The short URL doesn't redirect anymore, but keeps its suffix reserved</description>
+    <exit-transition transition_id="enable" />
+    <permission-map name="Access contents information" acquired="False">
+      <permission-role>Owner</permission-role>
+      <permission-role>Editor</permission-role>
+      <permission-role>Reader</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Site Administrator</permission-role>
+    </permission-map>
+    <permission-map name="Delete objects" acquired="False">
+      <permission-role>Manager</permission-role>
+      <permission-role>Site Administrator</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+      <permission-role>Owner</permission-role>
+      <permission-role>Editor</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Site Administrator</permission-role>
+    </permission-map>
+    <permission-map name="View" acquired="False">
+      <permission-role>Owner</permission-role>
+      <permission-role>Editor</permission-role>
+      <permission-role>Reader</permission-role>
+      <permission-role>Manager</permission-role>
+      <permission-role>Site Administrator</permission-role>
+    </permission-map>
+  </state>
+
+  <transition transition_id="disable" title="Disable" new_state="disabled"
+    trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <description>The short URL stops redirecting, its suffix stays reserved</description>
+    <action url="%(content_url)s/content_status_modify?workflow_action=disable"
+      category="workflow" icon="" i18n:translate="">Disable</action>
+    <guard>
+      <guard-permission>Modify portal content</guard-permission>
+    </guard>
+  </transition>
+
+  <transition transition_id="enable" title="Enable" new_state="active"
+    trigger="USER" before_script="" after_script="" i18n:attributes="title">
+    <description>The short URL redirects again</description>
+    <action url="%(content_url)s/content_status_modify?workflow_action=enable"
+      category="workflow" icon="" i18n:translate="">Enable</action>
+    <guard>
+      <guard-permission>Modify portal content</guard-permission>
+    </guard>
+  </transition>
 
   <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
     <description>Previous transition</description>

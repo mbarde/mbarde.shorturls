@@ -13,14 +13,24 @@ Managers / Site Administrators can add. You can create as many as you like,
 e.g. one per institution. In a Short URL Folder:
 
 - every logged-in user can add short URLs - no sharing setup needed
-- every short URL is only visible to and editable / deletable by its owner
-  (the user who created it)
+- every short URL is only visible to and editable by its owner (the user who
+  created it)
 - users with the `Editor` role on the folder (_Sharing_ tab: _Can edit_) can
-  see, edit and delete all short URLs in it, users with the `Reader` role
-  (_Can view_) can see all of them. Granting these roles on a regular folder
-  containing several Short URL Folders applies to all of them.
+  see, edit, disable and enable all short URLs in it, users with the `Reader`
+  role (_Can view_) can see all of them. Granting these roles on a regular
+  folder containing several Short URL Folders applies to all of them.
 
-Suffixes are unique across the whole site, not per folder.
+Suffixes are unique across the whole site, not per folder. They can't be
+changed after creation (like in Polr).
+
+### Disabling instead of deleting
+
+Owners and Editors can't delete short URLs, they _disable_ them: a disabled
+short URL doesn't redirect anymore (visitors get the same response as for an
+unknown suffix), but keeps its suffix reserved - otherwise someone else could
+register it, and old shared or printed links would lead to their target.
+Owners and Editors can enable disabled short URLs again. Only Managers / Site
+Administrators can delete short URLs, which frees their suffix.
 
 Short URL Folders are unordered (no drag & drop sorting), as an ordered
 folder would get slow with tens of thousands of short URLs.

@@ -15,7 +15,8 @@ class GoView(BrowserView):
     Public: short urls themselves are not visible to anonymous users (see
     shorturl_workflow), so they are looked up regardless of permissions.
 
-    Unknown suffixes redirect to the "fallback target url" (see control panel).
+    Unknown suffixes and disabled short urls redirect to the "fallback target
+    url" (see control panel).
     """
 
     suffix = None
@@ -34,7 +35,8 @@ class GoView(BrowserView):
         if not self.suffix or self.extra_path or not SUFFIX_PATTERN.match(self.suffix):
             return self.notFound()
         brain = findShortUrlBySuffix(self.suffix)
-        if brain is None:
+        # disabled short urls only keep their suffix reserved
+        if brain is None or brain.review_state != "active":
             return self.notFound()
         shorturl = brain._unrestrictedGetObject()
         shorturl.countClick(self.request)
