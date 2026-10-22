@@ -6,14 +6,17 @@ from plone import api
 from plone.dexterity.content import Item
 from plone.indexer import indexer
 from plone.protect.utils import safeWrite
+from plone.registry.interfaces import IRegistry
 from plone.rest.interfaces import IAPIRequest
 from plone.restapi.deserializer.dxfields import TextLineFieldDeserializer
 from plone.restapi.interfaces import IFieldDeserializer
 from plone.supermodel import model
 from plone.uuid.interfaces import IUUID
+from urllib.parse import urlsplit
 from z3c.form import validator
 from zope import schema
 from zope.component import adapter
+from zope.component import queryUtility
 from zope.globalrequest import getRequest
 from zope.interface import alsoProvides
 from zope.interface import implementer
@@ -40,6 +43,48 @@ class InvalidTargetUrlScheme(schema.ValidationError):
     __doc__ = _("Only http:// and https:// URLs are allowed.")
 
 
+class TargetUrlDomainNotAllowed(schema.ValidationError):
+    __doc__ = _("The domain of this URL is not allowed.")
+
+    def doc(self):
+        return _(
+            "target_url_domain_not_allowed",
+            default="The domain of this URL is not allowed. Allowed domains "
+            "(including their subdomains): ${domains}",
+            mapping={"domains": ", ".join(getAllowedDomains())},
+        )
+
+
+def getAllowedDomains():
+    """Domains target urls are restricted to (see control panel), empty if
+    there is no restriction."""
+    registry = queryUtility(IRegistry)
+    if registry is None:
+        return []
+    domains = registry.get("mbarde.shorturls.allowed_domains") or []
+    # the control panel's textarea may add blank entries
+    return [domain for domain in domains if domain.strip()]
+
+
+def normalizeDomain(domain):
+    return domain.strip().lower().rstrip(".")
+
+
+def isAllowedDomain(url, domains):
+    """Whether the host of `url` is one of `domains` or a subdomain of one."""
+    if not domains:
+        return True
+    # hostname: lowercased, without port and user info - so a url like
+    # https://example.org@evil.com/ is matched against "evil.com"
+    host = normalizeDomain(urlsplit(url).hostname or "")
+    if not host:
+        return False
+    for domain in map(normalizeDomain, domains):
+        if domain and (host == domain or host.endswith("." + domain)):
+            return True
+    return False
+
+
 def isValidSuffix(value):
     if not SUFFIX_PATTERN.match(value):
         raise InvalidSuffix(value)
@@ -49,6 +94,8 @@ def isValidSuffix(value):
 def isValidTargetUrl(value):
     if not value.lower().startswith(("http://", "https://")):
         raise InvalidTargetUrlScheme(value)
+    if not isAllowedDomain(value, getAllowedDomains()):
+        raise TargetUrlDomainNotAllowed(value)
     return True
 
 

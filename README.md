@@ -25,6 +25,14 @@ Suffixes are unique across the whole site, not per folder.
 Short URL Folders are unordered (no drag & drop sorting), as an ordered
 folder would get slow with tens of thousands of short URLs.
 
+### Allowed domains
+
+_Allowed domains_ in the control panel restricts the target URLs of short URLs
+to these domains (one per line) and their subdomains: `example.org` allows
+`example.org`, `www.example.org` etc., but not `notexample.org`. Leave empty to
+allow all domains. It's checked when short URLs are added or edited (forms and
+REST API) - existing short URLs keep redirecting.
+
 ## Redirecting
 
 `<portal-url>/@@go/<suffix>` redirects (`302`) to the target URL of the short

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 09:21+0000\n"
+"POT-Creation-Date: 2026-10-22 09:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <de@li.org>\n"
@@ -18,13 +18,17 @@ msgstr ""
 msgid "Add short URL"
 msgstr "Kurz-URL hinzufügen"
 
-#: ../browser/controlpanel.py:24
+#: ../browser/controlpanel.py:73
+msgid "Allowed domains"
+msgstr "Erlaubte Domains"
+
+#: ../browser/controlpanel.py:51
 msgid "Base URL"
 msgstr "Basis-URL"
 
 #: ../browser/templates/short_url_container_view.pt:35
 #: ../browser/templates/short_url_view.pt:41
-#: ../content/short_url.py:77
+#: ../content/short_url.py:124
 msgid "Clicks"
 msgstr "Aufrufe"
 
@@ -37,7 +41,7 @@ msgid "Created by"
 msgstr "Erstellt von"
 
 #: ../browser/templates/short_url_view.pt:45
-#: ../content/short_url.py:85
+#: ../content/short_url.py:132
 msgid "Created via API"
 msgstr "Über API erstellt"
 
@@ -51,7 +55,11 @@ msgstr "Löschen"
 msgid "Edit"
 msgstr "Bearbeiten"
 
-#: ../browser/controlpanel.py:35
+#: ../browser/controlpanel.py:23
+msgid "Enter domains only, without protocol or path (e.g. example.org)."
+msgstr "Nur Domains eingeben, ohne Protokoll oder Pfad (z.B. example.org)."
+
+#: ../browser/controlpanel.py:62
 msgid "Fallback target URL"
 msgstr "Ausweich-Ziel-URL"
 
@@ -59,7 +67,7 @@ msgstr "Ausweich-Ziel-URL"
 msgid "Folder in which all logged-in users can create short URLs"
 msgstr "Ordner, in dem alle angemeldeten Benutzer Kurz-URLs anlegen können"
 
-#: ../content/short_url.py:78
+#: ../content/short_url.py:125
 msgid "How often the short URL has been used."
 msgstr "Wie oft die Kurz-URL aufgerufen wurde."
 
@@ -67,11 +75,11 @@ msgstr "Wie oft die Kurz-URL aufgerufen wurde."
 msgid "Installs the mbarde.shorturls add-on."
 msgstr "Installiert das Add-on mbarde.shorturls."
 
-#: ../content/short_url.py:40
+#: ../content/short_url.py:43
 msgid "Only http:// and https:// URLs are allowed."
 msgstr "Nur http://- und https://-URLs sind erlaubt."
 
-#: ../content/short_url.py:32
+#: ../content/short_url.py:35
 msgid "Only letters (a-z, A-Z), digits, '-' and '_' are allowed."
 msgstr "Nur Buchstaben (a-z, A-Z), Ziffern, '-' und '_' sind erlaubt."
 
@@ -90,29 +98,33 @@ msgid "Short URL redirecting to a target URL"
 msgstr "Kurz-URL, die auf eine Ziel-URL weiterleitet"
 
 #: ../browser/templates/short_url_container_view.pt:32
-#: ../content/short_url.py:58
+#: ../content/short_url.py:105
 msgid "Suffix"
 msgstr "Suffix"
 
 #: ../browser/templates/short_url_container_view.pt:34
 #: ../browser/templates/short_url_view.pt:31
-#: ../content/short_url.py:70
+#: ../content/short_url.py:117
 msgid "Target URL"
 msgstr "Ziel-URL"
 
-#: ../content/short_url.py:71
+#: ../content/short_url.py:118
 msgid "The URL the short URL redirects to."
 msgstr "Die URL, auf die die Kurz-URL weiterleitet."
 
-#: ../browser/controlpanel.py:11
+#: ../browser/controlpanel.py:13
 msgid "The base URL must not end with a '/'."
 msgstr "Die Basis-URL darf nicht mit einem '/' enden."
+
+#: ../content/short_url.py:47
+msgid "The domain of this URL is not allowed."
+msgstr "Die Domain dieser URL ist nicht erlaubt."
 
 #: ../browser/templates/short_url_container_view.pt:78
 msgid "There are no short URLs yet."
 msgstr "Es gibt noch keine Kurz-URLs."
 
-#: ../content/short_url.py:36
+#: ../content/short_url.py:39
 msgid "This suffix is already in use."
 msgstr "Dieses Suffix wird bereits verwendet."
 
@@ -129,15 +141,25 @@ msgstr "Anzeigen"
 msgid "Yes"
 msgstr "Ja"
 
+#. Default: "Target URLs of short URLs have to be on one of these domains (one per line) - including their subdomains, e.g. example.org also allows www.example.org. Leave empty to allow all domains. Only checked when short URLs are added or edited."
+#: ../browser/controlpanel.py:74
+msgid "allowed_domains_description"
+msgstr "Ziel-URLs von Kurz-URLs müssen auf einer dieser Domains liegen (eine pro Zeile) - einschließlich ihrer Subdomains, z.B. erlaubt example.org auch www.example.org. Leer lassen, um alle Domains zu erlauben. Wird nur beim Hinzufügen oder Bearbeiten von Kurz-URLs geprüft."
+
 #. Default: "The URL short URLs start with, followed by their suffix (e.g. https://go.example.org)."
-#: ../browser/controlpanel.py:25
+#: ../browser/controlpanel.py:52
 msgid "base_url_description"
 msgstr "Die URL, mit der Kurz-URLs beginnen, gefolgt von ihrem Suffix (z.B. https://go.example.org)."
 
 #. Default: "Visitors of unknown short URLs (and of the base URL itself) get redirected to this URL, e.g. your main website. Leave empty to show a 'Not found' page instead."
-#: ../browser/controlpanel.py:36
+#: ../browser/controlpanel.py:63
 msgid "fallback_target_url_description"
 msgstr "Besucher unbekannter Kurz-URLs (und der Basis-URL selbst) werden auf diese URL weitergeleitet, z.B. auf Ihre Hauptwebsite. Leer lassen, um stattdessen eine 'Nicht gefunden'-Seite anzuzeigen."
+
+#. Default: "${domain} is not a valid domain. Enter domains only, without protocol or path (e.g. example.org)."
+#: ../browser/controlpanel.py:26
+msgid "invalid_domain"
+msgstr "${domain} ist keine gültige Domain. Nur Domains eingeben, ohne Protokoll oder Pfad (z.B. example.org)."
 
 #: ../configure.zcml:30
 msgid "mbarde.shorturls"
@@ -147,11 +169,16 @@ msgstr ""
 msgid "mbarde.shorturls (uninstall)"
 msgstr ""
 
-#: ../browser/controlpanel.py:49
+#: ../browser/controlpanel.py:91
 msgid "mbarde.shorturls Settings"
 msgstr "mbarde.shorturls Einstellungen"
 
 #. Default: "The part of the short URL after the base URL. Matched case-insensitively, so it has to be unique regardless of case."
-#: ../content/short_url.py:59
+#: ../content/short_url.py:106
 msgid "suffix_description"
 msgstr "Der Teil der Kurz-URL nach der Basis-URL. Groß- und Kleinschreibung wird nicht unterschieden, daher muss das Suffix auch unabhängig davon eindeutig sein."
+
+#. Default: "The domain of this URL is not allowed. Allowed domains (including their subdomains): ${domains}"
+#: ../content/short_url.py:50
+msgid "target_url_domain_not_allowed"
+msgstr "Die Domain dieser URL ist nicht erlaubt. Erlaubte Domains (einschließlich ihrer Subdomains): ${domains}"

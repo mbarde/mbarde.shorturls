@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 09:21+0000\n"
+"POT-Creation-Date: 2026-10-22 09:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,13 +21,17 @@ msgstr ""
 msgid "Add short URL"
 msgstr ""
 
-#: ../browser/controlpanel.py:24
+#: ../browser/controlpanel.py:73
+msgid "Allowed domains"
+msgstr ""
+
+#: ../browser/controlpanel.py:51
 msgid "Base URL"
 msgstr ""
 
 #: ../browser/templates/short_url_container_view.pt:35
 #: ../browser/templates/short_url_view.pt:41
-#: ../content/short_url.py:77
+#: ../content/short_url.py:124
 msgid "Clicks"
 msgstr ""
 
@@ -40,7 +44,7 @@ msgid "Created by"
 msgstr ""
 
 #: ../browser/templates/short_url_view.pt:45
-#: ../content/short_url.py:85
+#: ../content/short_url.py:132
 msgid "Created via API"
 msgstr ""
 
@@ -54,7 +58,11 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ../browser/controlpanel.py:35
+#: ../browser/controlpanel.py:23
+msgid "Enter domains only, without protocol or path (e.g. example.org)."
+msgstr ""
+
+#: ../browser/controlpanel.py:62
 msgid "Fallback target URL"
 msgstr ""
 
@@ -62,7 +70,7 @@ msgstr ""
 msgid "Folder in which all logged-in users can create short URLs"
 msgstr ""
 
-#: ../content/short_url.py:78
+#: ../content/short_url.py:125
 msgid "How often the short URL has been used."
 msgstr ""
 
@@ -70,11 +78,11 @@ msgstr ""
 msgid "Installs the mbarde.shorturls add-on."
 msgstr ""
 
-#: ../content/short_url.py:40
+#: ../content/short_url.py:43
 msgid "Only http:// and https:// URLs are allowed."
 msgstr ""
 
-#: ../content/short_url.py:32
+#: ../content/short_url.py:35
 msgid "Only letters (a-z, A-Z), digits, '-' and '_' are allowed."
 msgstr ""
 
@@ -93,29 +101,33 @@ msgid "Short URL redirecting to a target URL"
 msgstr ""
 
 #: ../browser/templates/short_url_container_view.pt:32
-#: ../content/short_url.py:58
+#: ../content/short_url.py:105
 msgid "Suffix"
 msgstr ""
 
 #: ../browser/templates/short_url_container_view.pt:34
 #: ../browser/templates/short_url_view.pt:31
-#: ../content/short_url.py:70
+#: ../content/short_url.py:117
 msgid "Target URL"
 msgstr ""
 
-#: ../content/short_url.py:71
+#: ../content/short_url.py:118
 msgid "The URL the short URL redirects to."
 msgstr ""
 
-#: ../browser/controlpanel.py:11
+#: ../browser/controlpanel.py:13
 msgid "The base URL must not end with a '/'."
+msgstr ""
+
+#: ../content/short_url.py:47
+msgid "The domain of this URL is not allowed."
 msgstr ""
 
 #: ../browser/templates/short_url_container_view.pt:78
 msgid "There are no short URLs yet."
 msgstr ""
 
-#: ../content/short_url.py:36
+#: ../content/short_url.py:39
 msgid "This suffix is already in use."
 msgstr ""
 
@@ -132,14 +144,24 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
+#. Default: "Target URLs of short URLs have to be on one of these domains (one per line) - including their subdomains, e.g. example.org also allows www.example.org. Leave empty to allow all domains. Only checked when short URLs are added or edited."
+#: ../browser/controlpanel.py:74
+msgid "allowed_domains_description"
+msgstr ""
+
 #. Default: "The URL short URLs start with, followed by their suffix (e.g. https://go.example.org)."
-#: ../browser/controlpanel.py:25
+#: ../browser/controlpanel.py:52
 msgid "base_url_description"
 msgstr ""
 
 #. Default: "Visitors of unknown short URLs (and of the base URL itself) get redirected to this URL, e.g. your main website. Leave empty to show a 'Not found' page instead."
-#: ../browser/controlpanel.py:36
+#: ../browser/controlpanel.py:63
 msgid "fallback_target_url_description"
+msgstr ""
+
+#. Default: "${domain} is not a valid domain. Enter domains only, without protocol or path (e.g. example.org)."
+#: ../browser/controlpanel.py:26
+msgid "invalid_domain"
 msgstr ""
 
 #: ../configure.zcml:30
@@ -150,11 +172,16 @@ msgstr ""
 msgid "mbarde.shorturls (uninstall)"
 msgstr ""
 
-#: ../browser/controlpanel.py:49
+#: ../browser/controlpanel.py:91
 msgid "mbarde.shorturls Settings"
 msgstr ""
 
 #. Default: "The part of the short URL after the base URL. Matched case-insensitively, so it has to be unique regardless of case."
-#: ../content/short_url.py:59
+#: ../content/short_url.py:106
 msgid "suffix_description"
+msgstr ""
+
+#. Default: "The domain of this URL is not allowed. Allowed domains (including their subdomains): ${domains}"
+#: ../content/short_url.py:50
+msgid "target_url_domain_not_allowed"
 msgstr ""
