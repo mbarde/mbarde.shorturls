@@ -21,7 +21,8 @@ e.g. one per institution. In a Short URL Folder:
   folder containing several Short URL Folders applies to all of them.
 
 Suffixes are unique across the whole site, not per folder. They can't be
-changed after creation (like in Polr).
+changed after creation. Leave the suffix empty (in the add form or when
+creating short URLs via REST API) to get a random one.
 
 ### Disabling instead of deleting
 

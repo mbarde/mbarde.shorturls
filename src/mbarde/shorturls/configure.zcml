@@ -43,6 +43,9 @@
     name="mbarde.shorturls-hiddenprofiles"
   />
 
+  <!-- id derived from the suffix, generating a missing one -->
+  <adapter factory=".content.short_url.NameFromSuffix" />
+
   <!-- lowercased suffix for case-insensitive lookups -->
   <adapter
     factory=".content.short_url.suffixIndexer"
@@ -58,6 +61,13 @@
     for=".content.short_url.IShortUrl
          zope.lifecycleevent.interfaces.IObjectCopiedEvent"
     handler=".content.short_url.refuseCopy"
+  />
+
+  <!-- generate a missing suffix of short urls added with an explicit id -->
+  <subscriber
+    for=".content.short_url.IShortUrl
+         zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    handler=".content.short_url.generateMissingSuffix"
   />
 
   <!-- remember whether a short url was created via plone.restapi -->

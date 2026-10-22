@@ -28,7 +28,9 @@
 
   <!-- Enabled behaviors -->
   <property name="behaviors" purge="false">
-    <element value="plone.namefromtitle" />
+    <!-- the id is derived from the suffix by
+         mbarde.shorturls.content.short_url.NameFromSuffix -->
+    <element value="plone.namefromtitle" remove="True" />
   </property>
 
   <!-- View information -->

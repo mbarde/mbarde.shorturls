@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 10:05+0000\n"
+"POT-Creation-Date: 2026-10-22 10:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 
 #: ../browser/templates/short_url_container_view.pt:62
 #: ../browser/templates/short_url_view.pt:51
-#: ../content/short_url.py:134
+#: ../content/short_url.py:137
 msgid "Clicks"
 msgstr ""
 
@@ -48,7 +48,7 @@ msgid "Created by"
 msgstr ""
 
 #: ../browser/templates/short_url_view.pt:62
-#: ../content/short_url.py:149
+#: ../content/short_url.py:152
 msgid "Created via API"
 msgstr ""
 
@@ -90,7 +90,7 @@ msgstr ""
 msgid "Folder in which all logged-in users can create short URLs"
 msgstr ""
 
-#: ../content/short_url.py:135
+#: ../content/short_url.py:138
 msgid "How often the short URL has been used."
 msgstr ""
 
@@ -100,7 +100,7 @@ msgstr ""
 
 #: ../browser/templates/short_url_container_view.pt:63
 #: ../browser/templates/short_url_view.pt:55
-#: ../content/short_url.py:142
+#: ../content/short_url.py:145
 msgid "Last clicked"
 msgstr ""
 
@@ -108,11 +108,11 @@ msgstr ""
 msgid "Never"
 msgstr ""
 
-#: ../content/short_url.py:51
+#: ../content/short_url.py:54
 msgid "Only http:// and https:// URLs are allowed."
 msgstr ""
 
-#: ../content/short_url.py:39
+#: ../content/short_url.py:42
 msgid "Only letters (a-z, A-Z), digits, '-' and '_' are allowed."
 msgstr ""
 
@@ -131,17 +131,17 @@ msgid "Short URL redirecting to a target URL"
 msgstr ""
 
 #: ../browser/templates/short_url_container_view.pt:59
-#: ../content/short_url.py:113
+#: ../content/short_url.py:116
 msgid "Suffix"
 msgstr ""
 
 #: ../browser/templates/short_url_container_view.pt:61
 #: ../browser/templates/short_url_view.pt:41
-#: ../content/short_url.py:127
+#: ../content/short_url.py:130
 msgid "Target URL"
 msgstr ""
 
-#: ../content/short_url.py:128
+#: ../content/short_url.py:131
 msgid "The URL the short URL redirects to."
 msgstr ""
 
@@ -149,15 +149,15 @@ msgstr ""
 msgid "The base URL must not end with a '/'."
 msgstr ""
 
-#: ../content/short_url.py:143
+#: ../content/short_url.py:146
 msgid "The day the short URL has been used the last time."
 msgstr ""
 
-#: ../content/short_url.py:55
+#: ../content/short_url.py:58
 msgid "The domain of this URL is not allowed."
 msgstr ""
 
-#: ../content/short_url.py:43
+#: ../content/short_url.py:46
 msgid "The suffix of a short URL can't be changed."
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr ""
 msgid "This short URL is disabled: it doesn't redirect anymore, but its suffix stays reserved."
 msgstr ""
 
-#: ../content/short_url.py:47
+#: ../content/short_url.py:50
 msgid "This suffix is already in use."
 msgstr ""
 
@@ -218,12 +218,12 @@ msgstr ""
 msgid "mbarde.shorturls Settings"
 msgstr ""
 
-#. Default: "The part of the short URL after the base URL. Matched case-insensitively, so it has to be unique regardless of case. It can't be changed later."
-#: ../content/short_url.py:114
+#. Default: "The part of the short URL after the base URL. Matched case-insensitively, so it has to be unique regardless of case. It can't be changed later. Leave empty to generate a random one."
+#: ../content/short_url.py:117
 msgid "suffix_description"
 msgstr ""
 
 #. Default: "The domain of this URL is not allowed. Allowed domains (including their subdomains): ${domains}"
-#: ../content/short_url.py:58
+#: ../content/short_url.py:61
 msgid "target_url_domain_not_allowed"
 msgstr ""

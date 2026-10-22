@@ -6,6 +6,7 @@ from mbarde.shorturls import _
 from persistent import Persistent
 from plone import api
 from plone.autoform import directives
+from plone.base.interfaces import INameFromTitle
 from plone.dexterity.content import Item
 from plone.indexer import indexer
 from plone.protect.utils import safeWrite
@@ -28,6 +29,7 @@ from zope.interface import Interface
 from zope.publisher.interfaces.browser import IBrowserRequest
 
 import re
+import secrets
 
 SUFFIX_INDEX = "shorturl_suffix"
 
@@ -115,12 +117,14 @@ class IShortUrl(model.Schema):
             "suffix_description",
             default="The part of the short URL after the base URL. Matched "
             "case-insensitively, so it has to be unique regardless of case. "
-            "It can't be changed later.",
+            "It can't be changed later. Leave empty to generate a random one.",
         ),
-        required=True,
+        required=False,
         max_length=100,
         constraint=isValidSuffix,
     )
+    # the suffix can't be changed once created: shared, printed or QR coded
+    # links would break (see also SuffixDeserializer)
     directives.mode(IEditForm, suffix="display")
 
     target_url = schema.URI(
@@ -198,7 +202,7 @@ class ShortUrl(Item):
     """Short URL redirecting to a target URL."""
 
     # the suffix doubles as title, so editors don't have to enter one and
-    # the id gets generated from it (see plone.namefromtitle behavior)
+    # the id gets generated from it (see NameFromSuffix)
     @property
     def title(self):
         return getattr(self, "suffix", None) or ""
@@ -267,6 +271,55 @@ def findShortUrlBySuffix(suffix):
     return brains[0] if brains else None
 
 
+# lowercase only (suffixes are matched case-insensitively anyway) and without
+# look-alike characters (0/o, 1/l/i)
+GENERATED_SUFFIX_ALPHABET = "23456789abcdefghjkmnpqrstuvwxyz"
+GENERATED_SUFFIX_LENGTH = 6
+
+
+def randomSuffix():
+    return "".join(
+        secrets.choice(GENERATED_SUFFIX_ALPHABET) for i in range(GENERATED_SUFFIX_LENGTH)
+    )
+
+
+def generateSuffix():
+    """Random suffix not used by any short url yet (case-insensitively)."""
+    # a hundred in a row veeery unlikely, might be that something is broken
+    for i in range(100):
+        suffix = randomSuffix()
+        if findShortUrlBySuffix(suffix) is None:
+            return suffix
+    raise RuntimeError("Could not generate an unused suffix.")
+
+
+def ensureSuffix(obj):
+    """Generate a random suffix if the short url has none. Returns whether
+    one has been generated."""
+    if obj.suffix:
+        return False
+    obj.suffix = generateSuffix()
+    return True
+
+
+@implementer(INameFromTitle)
+@adapter(IShortUrl)
+class NameFromSuffix:
+    """The id of a short url is derived from its suffix.
+
+    Plone chooses the id right before a short url gets added (add form,
+    plone.restapi) - the last moment to generate a missing suffix.
+    """
+
+    def __init__(self, context):
+        self.context = context
+
+    @property
+    def title(self):
+        ensureSuffix(self.context)
+        return self.context.suffix
+
+
 def checkSuffixAvailable(context, suffix):
     """Raise SuffixInUse if another short url already uses the suffix.
 
@@ -302,15 +355,29 @@ class SuffixDeserializer(TextLineFieldDeserializer):
 
     Also refuses changing the suffix of an existing short url (the edit form
     only displays it). Sending the unchanged suffix is fine.
+
+    An empty suffix on creation gets generated (see NameFromSuffix).
     """
 
     def __call__(self, value):
-        value = super().__call__(value)
         current = self.context.suffix
+        if not value:
+            if current:
+                raise SuffixNotChangeable(value)
+            return None
+        value = super().__call__(value)
         if current and value != current:
             raise SuffixNotChangeable(value)
         checkSuffixAvailable(self.context, value)
         return value
+
+
+def generateMissingSuffix(obj, event):
+    """Fallback for short urls added with an explicit id (e.g. via plone.api),
+    which skips NameFromSuffix."""
+    if ensureSuffix(obj):
+        # already indexed when added - without the suffix
+        obj.reindexObject()
 
 
 def markCreatedViaApi(obj, event):
