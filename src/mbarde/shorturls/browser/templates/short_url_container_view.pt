@@ -1,0 +1,90 @@
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xml:lang="en"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  lang="en"
+  metal:use-macro="context/@@main_template/macros/master"
+  i18n:domain="mbarde.shorturls"
+>
+  <body>
+    <metal:content-core fill-slot="content-core">
+      <metal:block define-macro="content-core">
+        <p tal:condition="view/canAdd">
+          <a
+            class="btn btn-primary"
+            id="short-url-add"
+            tal:attributes="href string:${context/absolute_url}/++add++ShortUrl"
+            i18n:translate=""
+            >Add short URL</a
+          >
+        </p>
+
+        <tal:results tal:define="batch view/batch; baseUrl view/baseUrl">
+          <tal:listing tal:condition="batch">
+            <div metal:use-macro="context/batch_macros/macros/navigation"></div>
+
+            <div class="table-responsive">
+              <table class="table table-striped" id="short-urls">
+                <thead>
+                  <tr>
+                    <th i18n:translate="">Suffix</th>
+                    <th tal:condition="baseUrl" i18n:translate="">Short URL</th>
+                    <th i18n:translate="">Target URL</th>
+                    <th class="text-end" i18n:translate="">Clicks</th>
+                    <th i18n:translate="">Created by</th>
+                    <th i18n:translate="">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tal:entries tal:repeat="item batch">
+                    <tr tal:define="obj item/getObject">
+                      <td>
+                        <a
+                          class="short-url-item"
+                          tal:attributes="href item/getURL"
+                          tal:content="obj/suffix"
+                        />
+                      </td>
+                      <td tal:condition="baseUrl">
+                        <a
+                          tal:define="shortUrl string:${baseUrl}/${obj/suffix}"
+                          tal:attributes="href shortUrl"
+                          tal:content="shortUrl"
+                        />
+                      </td>
+                      <td class="text-break">
+                        <a
+                          tal:attributes="href obj/target_url"
+                          tal:content="obj/target_url"
+                        />
+                      </td>
+                      <td class="text-end" tal:content="obj/clicks" />
+                      <td tal:content="item/Creator" />
+                      <td
+                        class="text-nowrap"
+                        tal:content="python:view.toLocalizedTime(item.CreationDate())"
+                      />
+                    </tr>
+                  </tal:entries>
+                </tbody>
+              </table>
+            </div>
+
+            <div metal:use-macro="context/batch_macros/macros/navigation"></div>
+          </tal:listing>
+
+          <p
+            class="discreet"
+            id="short-urls-empty"
+            tal:condition="not:batch"
+            i18n:translate=""
+          >
+            There are no short URLs yet.
+          </p>
+        </tal:results>
+      </metal:block>
+    </metal:content-core>
+  </body>
+</html>

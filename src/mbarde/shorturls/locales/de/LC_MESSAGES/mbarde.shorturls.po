@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 08:43+0000\n"
+"POT-Creation-Date: 2026-10-22 08:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <de@li.org>\n"
@@ -14,14 +14,27 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: mbarde.shorturls\n"
 
+#: ../browser/templates/short_url_container_view.pt:15
+msgid "Add short URL"
+msgstr "Kurz-URL hinzufügen"
+
 #: ../browser/controlpanel.py:24
 msgid "Base URL"
 msgstr "Basis-URL"
 
+#: ../browser/templates/short_url_container_view.pt:35
 #: ../browser/templates/short_url_view.pt:41
 #: ../content/short_url.py:77
 msgid "Clicks"
 msgstr "Aufrufe"
+
+#: ../browser/templates/short_url_container_view.pt:37
+msgid "Created"
+msgstr "Erstellt"
+
+#: ../browser/templates/short_url_container_view.pt:36
+msgid "Created by"
+msgstr "Erstellt von"
 
 #: ../browser/templates/short_url_view.pt:45
 #: ../content/short_url.py:85
@@ -58,6 +71,7 @@ msgstr "Nur http://- und https://-URLs sind erlaubt."
 msgid "Only letters (a-z, A-Z), digits, '-' and '_' are allowed."
 msgstr "Nur Buchstaben (a-z, A-Z), Ziffern, '-' und '_' sind erlaubt."
 
+#: ../browser/templates/short_url_container_view.pt:33
 #: ../browser/templates/short_url_view.pt:25
 #: ../profiles/default/types/ShortUrl.xml
 msgid "Short URL"
@@ -71,10 +85,12 @@ msgstr "Kurz-URL-Ordner"
 msgid "Short URL redirecting to a target URL"
 msgstr "Kurz-URL, die auf eine Ziel-URL weiterleitet"
 
+#: ../browser/templates/short_url_container_view.pt:32
 #: ../content/short_url.py:58
 msgid "Suffix"
 msgstr "Suffix"
 
+#: ../browser/templates/short_url_container_view.pt:34
 #: ../browser/templates/short_url_view.pt:31
 #: ../content/short_url.py:70
 msgid "Target URL"
@@ -87,6 +103,10 @@ msgstr "Die URL, auf die die Kurz-URL weiterleitet."
 #: ../browser/controlpanel.py:11
 msgid "The base URL must not end with a '/'."
 msgstr "Die Basis-URL darf nicht mit einem '/' enden."
+
+#: ../browser/templates/short_url_container_view.pt:78
+msgid "There are no short URLs yet."
+msgstr "Es gibt noch keine Kurz-URLs."
 
 #: ../content/short_url.py:36
 msgid "This suffix is already in use."

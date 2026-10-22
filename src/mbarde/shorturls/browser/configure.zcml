@@ -19,6 +19,14 @@
         permission="zope2.View"
     />
 
+    <browser:page
+        name="shorturls_listing"
+        for="mbarde.shorturls.content.short_url_container.IShortUrlContainer"
+        class=".short_url_container.ShortUrlContainerView"
+        template="templates/short_url_container_view.pt"
+        permission="zope2.View"
+    />
+
     <!-- @@go/<suffix> redirects to the short url's target url -->
     <browser:page
         name="go"

@@ -40,12 +40,11 @@
 
   <!-- View information -->
   <property name="add_view_expr">string:${folder_url}/++add++ShortUrlContainer</property>
-  <property name="default_view">listing_view</property>
+  <property name="default_view">shorturls_listing</property>
   <property name="default_view_fallback">False</property>
-  <property name="immediate_view">listing_view</property>
+  <property name="immediate_view">shorturls_listing</property>
   <property name="view_methods">
-    <element value="listing_view" />
-    <element value="tabular_view" />
+    <element value="shorturls_listing" />
   </property>
 
   <!-- Method aliases -->
