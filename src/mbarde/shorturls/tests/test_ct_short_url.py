@@ -33,7 +33,7 @@ class ShortUrlIntegrationTest(unittest.TestCase):
         self.portal = self.layer["portal"]
         self.request = self.layer["request"]
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
-        self.folder = api.content.create(container=self.portal, type="Folder", id="s")
+        self.folder = api.content.create(container=self.portal, type="ShortUrlContainer", id="s")
 
     def createShortUrl(self, suffix, target_url="https://www.plone.org"):
         return api.content.create(
@@ -88,10 +88,10 @@ class ShortUrlIntegrationTest(unittest.TestCase):
         self.assertEqual(obj.clicks, 0)
         self.assertFalse(obj.is_api)
 
-    def test_ct_short_url_globally_addable(self):
+    def test_ct_short_url_globally_not_addable(self):
         setRoles(self.portal, TEST_USER_ID, ["Contributor"])
         fti = queryUtility(IDexterityFTI, name="ShortUrl")
-        self.assertTrue(fti.global_allow, "{0} is not globally addable!".format(fti.id))
+        self.assertFalse(fti.global_allow, "{0} is globally addable!".format(fti.id))
 
     def test_reserved_suffix_gets_other_id(self):
         # "id" is no valid Plone id, but still a valid suffix
@@ -158,7 +158,7 @@ class ShortUrlRestApiTest(unittest.TestCase):
     def setUp(self):
         self.portal = self.layer["portal"]
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
-        api.content.create(container=self.portal, type="Folder", id="s")
+        api.content.create(container=self.portal, type="ShortUrlContainer", id="s")
         transaction.commit()
 
         self.api_session = requests.Session()
@@ -207,7 +207,7 @@ class ShortUrlAddFormTest(unittest.TestCase):
     def setUp(self):
         self.portal = self.layer["portal"]
         setRoles(self.portal, TEST_USER_ID, ["Manager"])
-        api.content.create(container=self.portal, type="Folder", id="s")
+        api.content.create(container=self.portal, type="ShortUrlContainer", id="s")
         transaction.commit()
 
         self.browser = Browser(self.layer["app"])

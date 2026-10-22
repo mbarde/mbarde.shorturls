@@ -6,6 +6,11 @@
     <configure zcml:condition="installed AccessControl.security">
 
         <permission
+            id="mbarde.shorturls.AddShortUrlContainer"
+            title="mbarde.shorturls: Add ShortUrlContainer"
+        />
+
+        <permission
             id="mbarde.shorturls.AddShortUrl"
             title="mbarde.shorturls: Add ShortUrl"
         />

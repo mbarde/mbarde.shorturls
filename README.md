@@ -6,6 +6,25 @@ Plone-Addon for managing short URLs.
 
 `uv pip install mbarde.shorturls`
 
+## Setup
+
+Short URLs live in _Short URL Folders_ (`ShortUrlContainer`), which only
+Managers / Site Administrators can add. You can create as many as you like,
+e.g. one per institution. In a Short URL Folder:
+
+- every logged-in user can add short URLs - no sharing setup needed
+- every short URL is only visible to and editable / deletable by its owner
+  (the user who created it)
+- users with the `Editor` role on the folder (_Sharing_ tab: _Can edit_) can
+  see, edit and delete all short URLs in it, users with the `Reader` role
+  (_Can view_) can see all of them. Granting these roles on a regular folder
+  containing several Short URL Folders applies to all of them.
+
+Suffixes are unique across the whole site, not per folder.
+
+Short URL Folders are unordered (no drag & drop sorting), as an ordered
+folder would get slow with tens of thousands of short URLs.
+
 ## Contribute
 
 - Issue Tracker: https://github.com/mbarde/mbarde.shorturls/issues

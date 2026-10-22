@@ -12,6 +12,14 @@
     />
 
     <browser:page
+        name="view"
+        for="mbarde.shorturls.content.short_url.IShortUrl"
+        class=".short_url.ShortUrlView"
+        template="templates/short_url_view.pt"
+        permission="zope2.View"
+    />
+
+    <browser:page
         name="mbarde-shorturls-controlpanel"
         for="plone.base.interfaces.IPloneSiteRoot"
         class=".controlpanel.MbardeShorturlsControlPanelView"

@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 07:04+0000\n"
+"POT-Creation-Date: 2026-10-22 07:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: English <en@li.org>\n"
@@ -14,23 +14,39 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: mbarde.shorturls\n"
 
+#: ../browser/controlpanel.py:14
+msgid "Base URL"
+msgstr ""
+
+#: ../browser/templates/short_url_view.pt:41
 #: ../content/short_url.py:74
 msgid "Clicks"
 msgstr ""
 
+#: ../browser/templates/short_url_view.pt:45
 #: ../content/short_url.py:82
 msgid "Created via API"
 msgstr ""
 
+#: ../browser/templates/short_url_view.pt:60
+msgid "Delete"
+msgstr ""
+
+#: ../browser/templates/short_url_view.pt:52
 #: ../profiles/default/types/ShortUrl.xml
+#: ../profiles/default/types/ShortUrlContainer.xml
 msgid "Edit"
+msgstr ""
+
+#: ../profiles/default/types/ShortUrlContainer.xml
+msgid "Folder in which all logged-in users can create short URLs"
 msgstr ""
 
 #: ../content/short_url.py:75
 msgid "How often the short URL has been used."
 msgstr ""
 
-#: ../configure.zcml:32
+#: ../configure.zcml:30
 msgid "Installs the mbarde.shorturls add-on."
 msgstr ""
 
@@ -42,8 +58,13 @@ msgstr ""
 msgid "Only letters (a-z, A-Z), digits, '-' and '_' are allowed."
 msgstr ""
 
+#: ../browser/templates/short_url_view.pt:25
 #: ../profiles/default/types/ShortUrl.xml
 msgid "Short URL"
+msgstr ""
+
+#: ../profiles/default/types/ShortUrlContainer.xml
+msgid "Short URL Folder"
 msgstr ""
 
 #: ../profiles/default/types/ShortUrl.xml
@@ -54,6 +75,7 @@ msgstr ""
 msgid "Suffix"
 msgstr ""
 
+#: ../browser/templates/short_url_view.pt:31
 #: ../content/short_url.py:67
 msgid "Target URL"
 msgstr ""
@@ -66,23 +88,33 @@ msgstr ""
 msgid "This suffix is already in use."
 msgstr ""
 
-#: ../configure.zcml:41
+#: ../configure.zcml:39
 msgid "Uninstalls the mbarde.shorturls add-on."
 msgstr ""
 
 #: ../profiles/default/types/ShortUrl.xml
+#: ../profiles/default/types/ShortUrlContainer.xml
 msgid "View"
 msgstr ""
 
-#: ../configure.zcml:32
+#: ../browser/templates/short_url_view.pt:46
+msgid "Yes"
+msgstr ""
+
+#. Default: "The URL short URLs start with, followed by their suffix (e.g. https://go.example.org/)."
+#: ../browser/controlpanel.py:15
+msgid "base_url_description"
+msgstr ""
+
+#: ../configure.zcml:30
 msgid "mbarde.shorturls"
 msgstr ""
 
-#: ../configure.zcml:41
+#: ../configure.zcml:39
 msgid "mbarde.shorturls (uninstall)"
 msgstr ""
 
-#: ../browser/controlpanel.py:16
+#: ../browser/controlpanel.py:27
 msgid "mbarde.shorturls Settings"
 msgstr ""
 

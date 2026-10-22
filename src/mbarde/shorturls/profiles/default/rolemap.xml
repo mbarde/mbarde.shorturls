@@ -2,6 +2,13 @@
 <rolemap>
   <permissions>
 
+    <!-- containers are set up by administrators -->
+    <permission name="mbarde.shorturls: Add ShortUrlContainer" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+    </permission>
+
+    <!-- inside of containers this is managed by shorturl_container_workflow -->
     <permission name="mbarde.shorturls: Add ShortUrl" acquire="True">
       <role name="Manager" />
       <role name="Site Administrator" />
