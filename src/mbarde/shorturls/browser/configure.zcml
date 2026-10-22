@@ -19,6 +19,14 @@
         permission="zope2.View"
     />
 
+    <!-- @@go/<suffix> redirects to the short url's target url -->
+    <browser:page
+        name="go"
+        for="plone.base.interfaces.IPloneSiteRoot"
+        class=".go.GoView"
+        permission="zope2.Public"
+    />
+
     <browser:page
         name="mbarde-shorturls-controlpanel"
         for="plone.base.interfaces.IPloneSiteRoot"

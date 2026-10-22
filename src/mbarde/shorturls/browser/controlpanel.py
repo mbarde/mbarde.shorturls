@@ -15,7 +15,7 @@ class IMbardeShorturlsControlPanel(Interface):
         description=_(
             "base_url_description",
             default="The URL short URLs start with, followed by their suffix "
-            "(e.g. https://go.example.org/).",
+            "(e.g. https://go.example.org).",
         ),
         required=False,
     )

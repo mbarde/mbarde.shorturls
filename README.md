@@ -25,6 +25,28 @@ Suffixes are unique across the whole site, not per folder.
 Short URL Folders are unordered (no drag & drop sorting), as an ordered
 folder would get slow with tens of thousands of short URLs.
 
+## Redirecting
+
+`<portal-url>/@@go/<suffix>` redirects (`302`) to the target URL of the short
+URL with that suffix (matched case-insensitively) and counts the click.
+Unknown suffixes return a `404`.
+
+To serve short URLs from their own domain (e.g. `https://go.example.org/<suffix>`),
+set _Base URL_ in the `mbarde.shorturls` control panel to that domain (used to
+display the short URLs) and let the web server rewrite all requests to
+`@@go`, e.g. for nginx and a Plone site with id `Plone`:
+
+```
+server {
+    server_name go.example.org;
+    ...
+    location / {
+        rewrite ^/(.*)$ /VirtualHostBase/https/go.example.org:443/Plone/VirtualHostRoot/@@go/$1 break;
+        proxy_pass http://127.0.0.1:8080;
+    }
+}
+```
+
 ## Contribute
 
 - Issue Tracker: https://github.com/mbarde/mbarde.shorturls/issues

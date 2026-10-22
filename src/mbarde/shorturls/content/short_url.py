@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from AccessControl import Unauthorized
+from BTrees.Length import Length
 from mbarde.shorturls import _
 from plone import api
 from plone.dexterity.content import Item
 from plone.indexer import indexer
+from plone.protect.utils import safeWrite
 from plone.rest.interfaces import IAPIRequest
 from plone.restapi.deserializer.dxfields import TextLineFieldDeserializer
 from plone.restapi.interfaces import IFieldDeserializer
@@ -107,6 +109,32 @@ class ShortUrl(Item):
     @title.setter
     def title(self, value):
         pass
+
+    # clicks are counted in a BTrees.Length, a separate persistent object
+    # which resolves conflicts of concurrent increments (instead of failing
+    # with a ConflictError when popular short urls get clicked simultaneously)
+    @property
+    def clicks(self):
+        counter = getattr(self, "_clicks", None)
+        return counter() if counter is not None else 0
+
+    @clicks.setter
+    def clicks(self, value):
+        counter = getattr(self, "_clicks", None)
+        if counter is None:
+            self._clicks = Length(value or 0)
+        else:
+            counter.set(value or 0)
+
+    def countClick(self, request=None):
+        """Increment the clicks, marked as safe write for plone.protect (the
+        redirect is a GET request)."""
+        if getattr(self, "_clicks", None) is None:
+            self._clicks = Length(0)
+            # the new counter has no oid yet, its creation modifies self
+            safeWrite(self, request)
+        self._clicks.change(1)
+        safeWrite(self._clicks, request)
 
 
 def normalizeSuffix(suffix):
