@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:z3c="http://namespaces.zope.org/z3c"
     i18n_domain="mbarde.shorturls">
 
     <!-- Publish static files -->
@@ -9,6 +10,14 @@
         name="mbarde.shorturls"
         type="plone"
         directory="static"
+    />
+
+    <!-- suffix input with the base url in front of it -->
+    <z3c:widgetTemplate
+        widget=".widgets.ISuffixWidget"
+        template="templates/suffix_input.pt"
+        layer="plone.app.z3cform.interfaces.IPloneFormLayer"
+        mode="input"
     />
 
     <browser:page

@@ -123,6 +123,7 @@ class IShortUrl(model.Schema):
         max_length=100,
         constraint=isValidSuffix,
     )
+    directives.widget(suffix="mbarde.shorturls.browser.widgets.SuffixFieldWidget")
     # the suffix can't be changed once created: shared, printed or QR coded
     # links would break (see also SuffixDeserializer)
     directives.mode(IEditForm, suffix="display")

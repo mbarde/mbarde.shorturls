@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from mbarde.shorturls.utils import getBaseUrl
 from plone import api
 from plone.app.contenttypes.browser.folder import FolderView
 
@@ -48,8 +49,7 @@ class ShortUrlContainerView(FolderView):
         ]
 
     def baseUrl(self):
-        base_url = api.portal.get_registry_record("mbarde.shorturls.base_url", default=None)
-        return base_url.rstrip("/") if base_url else None
+        return getBaseUrl()
 
     def localizedDate(self, value):
         return api.portal.get_localized_time(datetime=value) if value else ""

@@ -1,0 +1,25 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      tal:omit-tag=""
+>
+  <!--! Bootstrap input group: the base url in front of the actual input
+       (a plain input if no base url is configured) -->
+  <div class="input-group"
+       tal:define="baseUrl view/baseUrl"
+       tal:omit-tag="not:baseUrl"
+  >
+    <span class="input-group-text"
+          id="${view/id}-base-url"
+          tal:condition="baseUrl"
+          tal:content="string:${baseUrl}/"
+    >https://go.example.org/</span>
+    <input name="${view/name}"
+           type="text"
+           value="${view/value}"
+           tal:attributes="
+             view/attributes;
+             aria-describedby python:view.id + '-base-url' if baseUrl else None;
+           "
+    />
+  </div>
+</html>

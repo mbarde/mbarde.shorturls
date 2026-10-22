@@ -377,3 +377,49 @@ class SuffixNotChangeableRestApiTest(unittest.TestCase):
         self.assertEqual(response.status_code, 204, response.text)
         transaction.begin()
         self.assertEqual(self.obj.target_url, "https://plone.org/new")
+
+
+class SuffixWidgetTest(unittest.TestCase):
+    """The add form shows the base url in front of the suffix input."""
+
+    layer = MBARDE_SHORTURLS_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        api.content.create(container=self.portal, type="ShortUrlContainer", id="s")
+        transaction.commit()
+        self.browser = Browser(self.layer["app"])
+        self.browser.handleErrors = False
+        self.browser.addHeader(
+            "Authorization", "Basic {0}:{1}".format(SITE_OWNER_NAME, SITE_OWNER_PASSWORD)
+        )
+
+    def openAddForm(self):
+        self.browser.open(self.portal.absolute_url() + "/s/++add++ShortUrl")
+
+    def test_input_group(self):
+        api.portal.set_registry_record("mbarde.shorturls.base_url", "https://go.example.org")
+        transaction.commit()
+        self.openAddForm()
+        self.assertRegex(
+            self.browser.contents,
+            r'<div class="input-group">\s*'
+            r'<span class="input-group-text" id="form-widgets-suffix-base-url">'
+            r"https://go.example.org/</span>\s*"
+            r'<input name="form.widgets.suffix"[^>]*class="text-widget form-control"'
+            r'[^>]*aria-describedby="form-widgets-suffix-base-url"',
+        )
+        self.assertNotIn("Bootstrap input group", self.browser.contents)
+        # still a normal input
+        self.browser.getControl(name="form.widgets.suffix").value = "grouped"
+        self.browser.getControl(name="form.widgets.target_url").value = "https://plone.org"
+        self.browser.getControl(name="form.buttons.save").click()
+        transaction.begin()
+        self.assertEqual(self.portal.s["grouped"].suffix, "grouped")
+
+    def test_without_base_url(self):
+        self.openAddForm()
+        self.assertNotIn('class="input-group"', self.browser.contents)
+        self.assertNotIn("aria-describedby", self.browser.contents)
+        self.assertTrue(self.browser.getControl(name="form.widgets.suffix"))

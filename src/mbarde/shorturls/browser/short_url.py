@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from mbarde.shorturls.utils import getBaseUrl
 from plone import api
 from plone.protect.utils import addTokenToUrl
 from Products.CMFCore.permissions import DeleteObjects
@@ -15,10 +16,8 @@ class ShortUrlView(BrowserView):
 
     def shortUrl(self):
         """Full short url, or None if no base url is configured."""
-        base_url = api.portal.get_registry_record("mbarde.shorturls.base_url", default=None)
-        if not base_url:
-            return None
-        return base_url.rstrip("/") + "/" + self.context.suffix
+        base_url = getBaseUrl()
+        return base_url + "/" + self.context.suffix if base_url else None
 
     def lastClicked(self):
         last_clicked = self.context.last_clicked
