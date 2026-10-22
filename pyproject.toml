@@ -1,6 +1,6 @@
 [project]
 name = "mbarde.shorturls"
-version = "1.0.0"
+version = "1.0.1"
 description = "Plone-Addon for managing short URLs"
 authors = [{ name = "Matthias Barde" }]
 readme = "README.md"
