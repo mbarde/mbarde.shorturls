@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 07:55+0000\n"
+"POT-Creation-Date: 2026-10-22 08:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,17 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: mbarde.shorturls\n"
 
-#: ../browser/controlpanel.py:14
+#: ../browser/controlpanel.py:24
 msgid "Base URL"
 msgstr ""
 
 #: ../browser/templates/short_url_view.pt:41
-#: ../content/short_url.py:74
+#: ../content/short_url.py:77
 msgid "Clicks"
 msgstr ""
 
 #: ../browser/templates/short_url_view.pt:45
-#: ../content/short_url.py:82
+#: ../content/short_url.py:85
 msgid "Created via API"
 msgstr ""
 
@@ -45,7 +45,7 @@ msgstr ""
 msgid "Folder in which all logged-in users can create short URLs"
 msgstr ""
 
-#: ../content/short_url.py:75
+#: ../content/short_url.py:78
 msgid "How often the short URL has been used."
 msgstr ""
 
@@ -53,11 +53,11 @@ msgstr ""
 msgid "Installs the mbarde.shorturls add-on."
 msgstr ""
 
-#: ../content/short_url.py:37
+#: ../content/short_url.py:40
 msgid "Only http:// and https:// URLs are allowed."
 msgstr ""
 
-#: ../content/short_url.py:29
+#: ../content/short_url.py:32
 msgid "Only letters (a-z, A-Z), digits, '-' and '_' are allowed."
 msgstr ""
 
@@ -74,20 +74,24 @@ msgstr ""
 msgid "Short URL redirecting to a target URL"
 msgstr ""
 
-#: ../content/short_url.py:55
+#: ../content/short_url.py:58
 msgid "Suffix"
 msgstr ""
 
 #: ../browser/templates/short_url_view.pt:31
-#: ../content/short_url.py:67
+#: ../content/short_url.py:70
 msgid "Target URL"
 msgstr ""
 
-#: ../content/short_url.py:68
+#: ../content/short_url.py:71
 msgid "The URL the short URL redirects to."
 msgstr ""
 
-#: ../content/short_url.py:33
+#: ../browser/controlpanel.py:11
+msgid "The base URL must not end with a '/'."
+msgstr ""
+
+#: ../content/short_url.py:36
 msgid "This suffix is already in use."
 msgstr ""
 
@@ -104,8 +108,8 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#. Default: "The URL short URLs start with, followed by their suffix (e.g. https://go.example.org/)."
-#: ../browser/controlpanel.py:15
+#. Default: "The URL short URLs start with, followed by their suffix (e.g. https://go.example.org)."
+#: ../browser/controlpanel.py:25
 msgid "base_url_description"
 msgstr ""
 
@@ -117,11 +121,11 @@ msgstr ""
 msgid "mbarde.shorturls (uninstall)"
 msgstr ""
 
-#: ../browser/controlpanel.py:27
+#: ../browser/controlpanel.py:38
 msgid "mbarde.shorturls Settings"
 msgstr ""
 
 #. Default: "The part of the short URL after the base URL. Matched case-insensitively, so it has to be unique regardless of case."
-#: ../content/short_url.py:56
+#: ../content/short_url.py:59
 msgid "suffix_description"
 msgstr ""

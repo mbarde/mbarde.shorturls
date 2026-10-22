@@ -7,6 +7,16 @@ from zope import schema
 from zope.interface import Interface
 
 
+class BaseUrlEndsWithSlash(schema.ValidationError):
+    __doc__ = _("The base URL must not end with a '/'.")
+
+
+def isValidBaseUrl(value):
+    if value.endswith("/"):
+        raise BaseUrlEndsWithSlash(value)
+    return True
+
+
 class IMbardeShorturlsControlPanel(Interface):
     """Settings stored in the registry under the "mbarde.shorturls" prefix."""
 
@@ -18,6 +28,7 @@ class IMbardeShorturlsControlPanel(Interface):
             "(e.g. https://go.example.org).",
         ),
         required=False,
+        constraint=isValidBaseUrl,
     )
 
 

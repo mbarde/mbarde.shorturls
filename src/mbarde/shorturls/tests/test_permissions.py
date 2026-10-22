@@ -184,12 +184,20 @@ class ShortUrlViewBrowserTest(unittest.TestCase):
         self.assertEqual(browser.headers["status"], "200 OK")
 
     def test_view(self):
-        api.portal.set_registry_record("mbarde.shorturls.base_url", "https://go.example.org/")
+        api.portal.set_registry_record("mbarde.shorturls.base_url", "https://go.example.org")
         transaction.commit()
         browser = self.browser("alice")
         browser.open(self.url("/alice"))
         self.assertIn('href="https://go.example.org/alice"', browser.contents)
         self.assertIn('href="https://www.plone.org"', browser.contents)
+
+    def test_view_base_url_with_trailing_slash(self):
+        # only the control panel form refuses a trailing slash
+        api.portal.set_registry_record("mbarde.shorturls.base_url", "https://go.example.org/")
+        transaction.commit()
+        browser = self.browser("alice")
+        browser.open(self.url("/alice"))
+        self.assertIn('href="https://go.example.org/alice"', browser.contents)
 
     def test_view_without_base_url(self):
         browser = self.browser("alice")
