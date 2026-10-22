@@ -67,6 +67,19 @@ class GoViewTest(unittest.TestCase):
         self.assertEqual(self.clicks(), 1)
         self.assertEqual(self.container["anorgchem"].last_clicked, date.today())
 
+    def test_head_not_counted(self):
+        browser = self.browser()
+        response = browser.testapp.head(
+            self.portal.absolute_url() + "/@@go/AnorgChem", expect_errors=True
+        )
+        self.assertEqual(response.status, "302 Found")
+        self.assertEqual(response.headers["Location"], "https://www.plone.org/target?a=1")
+        self.assertEqual(self.clicks(), 0)
+        self.assertIsNone(self.container["anorgchem"].last_clicked)
+        # a GET afterwards is counted
+        self.assertRedirected(self.go("/AnorgChem"))
+        self.assertEqual(self.clicks(), 1)
+
     def test_redirect_case_insensitive(self):
         for suffix in ("anorgchem", "ANORGCHEM", "aNoRgChEm"):
             self.assertRedirected(self.go("/" + suffix))

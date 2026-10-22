@@ -39,7 +39,10 @@ class GoView(BrowserView):
         if brain is None or brain.review_state != "active":
             return self.notFound()
         shorturl = brain._unrestrictedGetObject()
-        shorturl.countClick(self.request)
+        # link checkers and security scanners (e.g. of mail clients) often
+        # only send HEAD requests - they get the redirect, but aren't clicks
+        if self.request.get("REQUEST_METHOD") != "HEAD":
+            shorturl.countClick(self.request)
         return self.redirect(shorturl.target_url)
 
     def notFound(self):
