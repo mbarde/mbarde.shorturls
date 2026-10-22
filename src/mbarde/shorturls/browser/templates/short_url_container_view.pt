@@ -81,6 +81,7 @@
                           tal:attributes="href shortUrl"
                           tal:content="shortUrl"
                           target="_blank"
+                          rel="noopener noreferrer"
                         />
                       </td>
                       <td class="text-break">
@@ -88,6 +89,7 @@
                           tal:attributes="href obj/target_url"
                           tal:content="obj/target_url"
                           target="_blank"
+                          rel="noopener noreferrer"
                         />
                       </td>
                       <td class="text-end" tal:content="obj/clicks" />

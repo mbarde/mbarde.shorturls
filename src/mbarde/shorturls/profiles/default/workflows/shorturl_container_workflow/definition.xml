@@ -3,7 +3,7 @@
   i18n:domain="plone"
   workflow_id="shorturl_container_workflow"
   title="Short URL Folder Workflow"
-  description="All logged-in users may add short URLs to the folder (and see / edit / delete their own ones, see shorturl_workflow)"
+  description="All logged-in users may add short URLs to the folder (and see / edit / disable their own ones, see shorturl_workflow)"
   state_variable="review_state"
   initial_state="open">
   <permission>Access contents information</permission>

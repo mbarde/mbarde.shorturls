@@ -117,11 +117,6 @@ afterwards via _Site Setup > Add-ons_.
 Set `debug-mode on` in `instance/etc/zope.conf` for template auto-reload
 during development (Python changes still need a restart).
 
-With `debug-mode on` and `Products.PrintingMailHost` installed (part of
-`requirements-dev.txt`), outgoing mail is printed to the instance log
-(`instance/var/log/event.log`) instead of actually being sent - no local
-mail server needed.
-
 ### Update translations
 
 ```
