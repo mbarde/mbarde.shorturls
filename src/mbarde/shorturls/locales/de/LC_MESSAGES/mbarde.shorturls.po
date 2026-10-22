@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 08:57+0000\n"
+"POT-Creation-Date: 2026-10-22 09:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: German <de@li.org>\n"
@@ -50,6 +50,10 @@ msgstr "Löschen"
 #: ../profiles/default/types/ShortUrlContainer.xml
 msgid "Edit"
 msgstr "Bearbeiten"
+
+#: ../browser/controlpanel.py:35
+msgid "Fallback target URL"
+msgstr "Ausweich-Ziel-URL"
 
 #: ../profiles/default/types/ShortUrlContainer.xml
 msgid "Folder in which all logged-in users can create short URLs"
@@ -130,6 +134,11 @@ msgstr "Ja"
 msgid "base_url_description"
 msgstr "Die URL, mit der Kurz-URLs beginnen, gefolgt von ihrem Suffix (z.B. https://go.example.org)."
 
+#. Default: "Visitors of unknown short URLs (and of the base URL itself) get redirected to this URL, e.g. your main website. Leave empty to show a 'Not found' page instead."
+#: ../browser/controlpanel.py:36
+msgid "fallback_target_url_description"
+msgstr "Besucher unbekannter Kurz-URLs (und der Basis-URL selbst) werden auf diese URL weitergeleitet, z.B. auf Ihre Hauptwebsite. Leer lassen, um stattdessen eine 'Nicht gefunden'-Seite anzuzeigen."
+
 #: ../configure.zcml:30
 msgid "mbarde.shorturls"
 msgstr ""
@@ -138,7 +147,7 @@ msgstr ""
 msgid "mbarde.shorturls (uninstall)"
 msgstr ""
 
-#: ../browser/controlpanel.py:38
+#: ../browser/controlpanel.py:49
 msgid "mbarde.shorturls Settings"
 msgstr "mbarde.shorturls Einstellungen"
 

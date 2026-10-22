@@ -71,6 +71,16 @@ class TestControlPanelForm(unittest.TestCase):
         self.browser.getControl(name="form.buttons.save").click()
         transaction.begin()
 
+    def test_save_fallback_target_url(self):
+        self.browser.getControl(name="form.widgets.fallback_target_url").value = (
+            "https://www.example.org/"
+        )
+        self.save("https://go.example.org")
+        self.assertEqual(
+            api.portal.get_registry_record("mbarde.shorturls.fallback_target_url"),
+            "https://www.example.org/",
+        )
+
     def test_trailing_slash_refused(self):
         self.save("https://go.example.org/")
         self.assertIn("The base URL must not end with a", self.browser.contents)

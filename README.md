@@ -29,7 +29,10 @@ folder would get slow with tens of thousands of short URLs.
 
 `<portal-url>/@@go/<suffix>` redirects (`302`) to the target URL of the short
 URL with that suffix (matched case-insensitively) and counts the click.
-Unknown suffixes return a `404`.
+Unknown suffixes - and the base URL itself (`@@go` without a suffix) -
+redirect (`302`) to the _Fallback target URL_ configured in the control panel
+(e.g. your main website), or return a `404` if none is configured. Don't set
+it to the base URL or an unknown short URL, that would redirect in a loop.
 
 To serve short URLs from their own domain (e.g. `https://go.example.org/<suffix>`),
 set _Base URL_ in the `mbarde.shorturls` control panel to that domain (used to

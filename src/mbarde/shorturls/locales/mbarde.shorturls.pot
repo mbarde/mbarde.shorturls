@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2026-10-22 08:57+0000\n"
+"POT-Creation-Date: 2026-10-22 09:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,6 +52,10 @@ msgstr ""
 #: ../profiles/default/types/ShortUrl.xml
 #: ../profiles/default/types/ShortUrlContainer.xml
 msgid "Edit"
+msgstr ""
+
+#: ../browser/controlpanel.py:35
+msgid "Fallback target URL"
 msgstr ""
 
 #: ../profiles/default/types/ShortUrlContainer.xml
@@ -133,6 +137,11 @@ msgstr ""
 msgid "base_url_description"
 msgstr ""
 
+#. Default: "Visitors of unknown short URLs (and of the base URL itself) get redirected to this URL, e.g. your main website. Leave empty to show a 'Not found' page instead."
+#: ../browser/controlpanel.py:36
+msgid "fallback_target_url_description"
+msgstr ""
+
 #: ../configure.zcml:30
 msgid "mbarde.shorturls"
 msgstr ""
@@ -141,7 +150,7 @@ msgstr ""
 msgid "mbarde.shorturls (uninstall)"
 msgstr ""
 
-#: ../browser/controlpanel.py:38
+#: ../browser/controlpanel.py:49
 msgid "mbarde.shorturls Settings"
 msgstr ""
 

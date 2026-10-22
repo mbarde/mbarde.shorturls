@@ -75,8 +75,25 @@ class GoViewTest(unittest.TestCase):
             self.assertRedirected(self.go("/AnorgChem", credentials))
         self.assertEqual(self.clicks(), 2)
 
-    def test_not_found(self):
-        for path in ("/unknown", "", "/", "/AnorgChem/more", "/a.b", "/%C3%A4"):
+    NOT_FOUND = ("/unknown", "/AnorgChem/more", "/a.b", "/%C3%A4", "", "/")
+
+    def test_not_found_redirects_to_fallback_target_url(self):
+        api.portal.set_registry_record(
+            "mbarde.shorturls.fallback_target_url", "https://www.example.org/not-found"
+        )
+        transaction.commit()
+        for path in self.NOT_FOUND:
+            browser = self.go(path)
+            self.assertEqual(browser.headers["status"], "302 Found", path)
+            self.assertEqual(browser.headers["location"], "https://www.example.org/not-found", path)
+            self.assertEqual(browser.headers["cache-control"], "no-store", path)
+        self.assertEqual(self.clicks(), 0)
+
+    def test_not_found_without_fallback_target_url(self):
+        # the base url is not used as fallback
+        api.portal.set_registry_record("mbarde.shorturls.base_url", "https://go.example.org")
+        transaction.commit()
+        for path in self.NOT_FOUND:
             browser = self.go(path)
             self.assertEqual(browser.headers["status"], "404 Not Found", path)
         self.assertEqual(self.clicks(), 0)

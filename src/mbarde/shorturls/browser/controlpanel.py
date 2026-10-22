@@ -31,6 +31,17 @@ class IMbardeShorturlsControlPanel(Interface):
         constraint=isValidBaseUrl,
     )
 
+    fallback_target_url = schema.URI(
+        title=_("Fallback target URL"),
+        description=_(
+            "fallback_target_url_description",
+            default="Visitors of unknown short URLs (and of the base URL itself) "
+            "get redirected to this URL, e.g. your main website. Leave empty to "
+            "show a 'Not found' page instead.",
+        ),
+        required=False,
+    )
+
 
 class MbardeShorturlsControlPanel(RegistryEditForm):
     schema = IMbardeShorturlsControlPanel
