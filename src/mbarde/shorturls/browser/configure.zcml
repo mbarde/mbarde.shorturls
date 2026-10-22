@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    i18n_domain="mbarde.shorturls">
+
+    <!-- Publish static files -->
+    <plone:static
+        name="mbarde.shorturls"
+        type="plone"
+        directory="static"
+    />
+
+    <browser:page
+        name="mbarde-shorturls-controlpanel"
+        for="plone.base.interfaces.IPloneSiteRoot"
+        class=".controlpanel.MbardeShorturlsControlPanelView"
+        permission="cmf.ManagePortal"
+    />
+
+</configure>

@@ -1,0 +1,52 @@
+[project]
+name = "mbarde.shorturls"
+version = "1.0.0a1"
+description = "Plone-Addon for managing short URLs"
+authors = [{ name = "Matthias Barde" }]
+readme = "README.md"
+license = "GPL-2.0-only"
+license-files = ["LICENSE.GPL"]
+requires-python = ">=3.12"
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Plone",
+    "Framework :: Plone :: 6.0",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "Plone",
+]
+
+[project.urls]
+Homepage = "https://github.com/mbarde/mbarde.shorturls"
+Repository = "https://github.com/mbarde/mbarde.shorturls"
+Issues = "https://github.com/mbarde/mbarde.shorturls/issues"
+
+[project.entry-points."z3c.autoinclude.plugin"]
+target = "plone"
+
+[build-system]
+requires = ["setuptools>=65"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = true
+include = ["mbarde.shorturls*"]
+
+[tool.setuptools.package-data]
+"mbarde.shorturls" = ["**/*"]
+
+[tool.setuptools.exclude-package-data]
+"mbarde.shorturls" = ["**/__pycache__/*", "**/*.pyc"]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]

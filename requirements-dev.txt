@@ -1,0 +1,18 @@
+pytest
+pytest-plone
+pytest-cov
+plone.app.robotframework
+plone.app.testing>=6.0
+setuptools<81
+zope.pytestlayer>=8.0
+
+# Prints outgoing mail to the instance log instead of sending it, so a local
+# instance (run with debug-mode on) can be used to test signup/notification
+# emails without a real SMTP server configured.
+Products.PrintingMailHost
+
+# Formatting / code style
+isort
+black
+flake8
+flake8-isort

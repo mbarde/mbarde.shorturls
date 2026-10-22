@@ -1,0 +1,4 @@
+[flake8]
+# to be in line with black:
+ignore = E203, I004, W503
+max-line-length = 100

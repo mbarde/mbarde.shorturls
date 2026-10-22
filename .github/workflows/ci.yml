@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+            requirements*.txt
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            gcc \
+            libldap2-dev \
+            libsasl2-dev \
+            libssl-dev \
+            libpq-dev \
+            python3-dev \
+            curl
+
+      - name: Install dependencies
+        run: |
+          uv venv .venv --python 3.12
+          uv pip install --python .venv/bin/python --upgrade pip
+          uv pip install --python .venv/bin/python -e .
+          uv pip install --python .venv/bin/python -r requirements-dev.txt
+
+      - name: Lint
+        run: |
+          .venv/bin/flake8 src/
+          .venv/bin/isort --check-only src/
+          .venv/bin/black --check src/
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+            requirements*.txt
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            gcc \
+            libldap2-dev \
+            libsasl2-dev \
+            libssl-dev \
+            libpq-dev \
+            python3-dev \
+            curl
+
+      - name: Install dependencies
+        run: |
+          uv venv .venv --python 3.12
+          uv pip install --python .venv/bin/python --upgrade pip
+          uv pip install --python .venv/bin/python -e .
+          uv pip install --python .venv/bin/python -r requirements-dev.txt
+
+      - name: Test
+        run: .venv/bin/pytest -v

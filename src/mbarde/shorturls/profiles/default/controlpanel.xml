@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<object name="portal_controlpanel">
+  <configlet
+    title="mbarde.shorturls Settings"
+    action_id="mbarde-shorturls-controlpanel"
+    appId="mbarde.shorturls"
+    category="Products"
+    condition_expr=""
+    url_expr="string:${portal_url}/@@mbarde-shorturls-controlpanel"
+    visible="True"
+  >
+    <permission>Manage portal</permission>
+  </configlet>
+</object>
