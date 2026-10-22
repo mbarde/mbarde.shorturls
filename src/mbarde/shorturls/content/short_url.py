@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from AccessControl import Unauthorized
 from mbarde.shorturls import _
 from plone import api
 from plone.dexterity.content import Item
@@ -170,3 +171,14 @@ def markCreatedViaApi(obj, event):
     """Remember whether a short url was added through plone.restapi."""
     if IAPIRequest.providedBy(getRequest()):
         obj.is_api = True
+
+
+def refuseCopy(obj, event):
+    """Short urls can't be copied: the copy would have the same suffix.
+
+    Also refuses copying a folder containing short urls, as copy events are
+    dispatched to the contents of a copied folder. Raised before the copy is
+    added. Unauthorized (instead of OFS' CopyError) gets turned into a proper
+    message by Plone's paste views and into a 401 by plone.restapi.
+    """
+    raise Unauthorized("Short URLs can't be copied, their suffix has to be unique.")

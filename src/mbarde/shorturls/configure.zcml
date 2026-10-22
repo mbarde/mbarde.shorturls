@@ -53,6 +53,13 @@
   <adapter factory=".content.short_url.SuffixValidator" />
   <adapter factory=".content.short_url.SuffixDeserializer" />
 
+  <!-- a copy would duplicate the suffix (moving is fine) -->
+  <subscriber
+    for=".content.short_url.IShortUrl
+         zope.lifecycleevent.interfaces.IObjectCopiedEvent"
+    handler=".content.short_url.refuseCopy"
+  />
+
   <!-- remember whether a short url was created via plone.restapi -->
   <subscriber
     for=".content.short_url.IShortUrl

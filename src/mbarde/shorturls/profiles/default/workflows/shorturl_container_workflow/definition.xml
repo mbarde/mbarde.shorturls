@@ -14,10 +14,6 @@
   <permission>View</permission>
   <permission>mbarde.shorturls: Add ShortUrl</permission>
 
-  <!-- "Delete objects" is not granted to Authenticated: it would allow
-       deleting the folder itself. Owners delete their short urls via the
-       delete button of the short url view, which only needs "Delete objects"
-       on the short url (see shorturl_workflow). -->
   <state state_id="open" title="Open" i18n:attributes="title">
     <description>All logged-in users may add short URLs</description>
     <permission-map name="Access contents information" acquired="False">
@@ -81,7 +77,8 @@
     <guard>
     </guard>
   </variable>
-  <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+  <variable variable_id="review_history" for_catalog="False" for_status="False"
+    update_always="False">
     <description>Provides access to workflow history</description>
     <default>
       <expression>state_change/getHistory</expression>
