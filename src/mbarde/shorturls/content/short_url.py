@@ -53,6 +53,10 @@ class InvalidTargetUrlScheme(schema.ValidationError):
     __doc__ = _("Only http:// and https:// URLs are allowed.")
 
 
+class TargetUrlWithoutDomain(schema.ValidationError):
+    __doc__ = _("The URL has to contain a domain (e.g. https://example.org/page).")
+
+
 class TargetUrlDomainNotAllowed(schema.ValidationError):
     __doc__ = _("The domain of this URL is not allowed.")
 
@@ -104,6 +108,8 @@ def isValidSuffix(value):
 def isValidTargetUrl(value):
     if not value.lower().startswith(("http://", "https://")):
         raise InvalidTargetUrlScheme(value)
+    if not urlsplit(value).hostname:
+        raise TargetUrlWithoutDomain(value)
     if not isAllowedDomain(value, getAllowedDomains()):
         raise TargetUrlDomainNotAllowed(value)
     return True

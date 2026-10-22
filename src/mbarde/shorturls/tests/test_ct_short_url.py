@@ -4,6 +4,7 @@ from mbarde.shorturls.content.short_url import InvalidSuffix
 from mbarde.shorturls.content.short_url import InvalidTargetUrlScheme
 from mbarde.shorturls.content.short_url import IShortUrl
 from mbarde.shorturls.content.short_url import SuffixInUse
+from mbarde.shorturls.content.short_url import TargetUrlWithoutDomain
 from mbarde.shorturls.testing import MBARDE_SHORTURLS_FUNCTIONAL_TESTING  # noqa
 from mbarde.shorturls.testing import MBARDE_SHORTURLS_INTEGRATION_TESTING  # noqa
 from mbarde.shorturls.testing import MBARDE_SHORTURLS_RESTAPI_TESTING  # noqa
@@ -130,6 +131,14 @@ class ShortUrlIntegrationTest(unittest.TestCase):
             with self.assertRaises(InvalidTargetUrlScheme):
                 field.validate(value)
 
+    def test_target_url_without_domain(self):
+        field = IShortUrl["target_url"]
+        for value in ("https://", "http://", "https:///path", "https://?x", "https://:443/"):
+            with self.assertRaises(TargetUrlWithoutDomain, msg=value):
+                field.validate(value)
+        for value in ("https://localhost/", "http://127.0.0.1:8080/x", "https://[::1]/"):
+            field.validate(value)
+
     def test_suffix_unique_on_add(self):
         self.createShortUrl("Taken")
         # on add forms the context is the container
@@ -234,6 +243,9 @@ class ShortUrlRestApiTest(unittest.TestCase):
     def test_invalid_target_url_rejected(self):
         response = self.post(suffix="evil", target_url="javascript:alert(1)")
         self.assertEqual(response.status_code, 400, response.text)
+        response = self.post(suffix="nohost", target_url="https:///path")
+        self.assertEqual(response.status_code, 400, response.text)
+        self.assertIn("The URL has to contain a domain", response.text)
 
 
 class ShortUrlAddFormTest(unittest.TestCase):
