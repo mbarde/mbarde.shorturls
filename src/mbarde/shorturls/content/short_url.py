@@ -32,6 +32,7 @@ import re
 import secrets
 
 SUFFIX_INDEX = "shorturl_suffix"
+TARGET_URL_INDEX = "shorturl_target_url"
 
 # same characters as used by the legacy short url system
 SUFFIX_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")

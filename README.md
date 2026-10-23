@@ -24,8 +24,7 @@ Suffixes are unique across the whole site, not per folder. They can't be
 changed after creation. Leave the suffix empty (in the add form or when
 creating short URLs via REST API) to get a random one.
 
-To find existing short URLs, search by suffix (lowercased) or by exact target
-URL, e.g. `@search?portal_type=ShortUrl&shorturl_suffix=abc` or
+Short URLs are hidden from Plone's site search by default to avoid flooding it, but it possible to use the search in the `shorturls_listing` view or search by suffix (lowercased) or by exact target URL via `@search` endpoint: e.g. `@search?portal_type=ShortUrl&shorturl_suffix=abc` or
 `@search?portal_type=ShortUrl&shorturl_target_url=https://example.org/page`.
 
 ### Disabling instead of deleting

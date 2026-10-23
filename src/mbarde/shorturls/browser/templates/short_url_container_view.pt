@@ -20,6 +20,47 @@
           >Add short URL</a>
         </p>
 
+        <form
+          class="mb-3"
+          id="short-url-search"
+          method="get"
+          role="search"
+          tal:attributes="action context/absolute_url"
+        >
+          <input
+            type="hidden"
+            name="state"
+            tal:condition="python:view.state != 'active'"
+            tal:attributes="value view/state"
+          />
+          <label class="form-label" for="short-url-search-text" i18n:translate=""
+            >Search short URLs</label
+          >
+          <div class="input-group">
+            <input
+              class="form-control"
+              id="short-url-search-text"
+              name="q"
+              type="search"
+              aria-describedby="short-url-search-help"
+              tal:attributes="value view/searchText"
+            />
+            <button class="btn btn-primary" type="submit" i18n:translate="">Search</button>
+            <a
+              class="btn btn-outline-secondary"
+              id="short-url-search-reset"
+              tal:condition="view/searchText"
+              tal:attributes="href python:context.absolute_url() + ('' if view.state == 'active' else '?state=' + view.state)"
+              i18n:translate=""
+              >Reset</a
+            >
+          </div>
+          <div class="form-text" id="short-url-search-help" i18n:translate="short_url_search_help">
+            The beginning of a suffix, a short URL, or the beginning of a target URL (starting with
+            https://).
+          </div>
+        </form>
+
         <ul class="nav nav-tabs mb-3" id="short-url-tabs">
           <li class="nav-item" tal:repeat="tab view/tabs">
             <a
@@ -114,10 +155,19 @@
           <p
             class="discreet"
             id="short-urls-empty"
-            tal:condition="not:batch"
+            tal:condition="python:not batch and not view.searchText"
             i18n:translate=""
           >
             There are no short URLs here.
+          </p>
+
+          <p
+            class="discreet"
+            id="short-urls-no-matches"
+            tal:condition="python:not batch and view.searchText"
+            i18n:translate=""
+          >
+            No short URLs match your search.
           </p>
         </tal:results>
       </metal:block>

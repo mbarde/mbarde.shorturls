@@ -10,6 +10,7 @@ from plone.app.testing import logout
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.testing.zope import Browser
+from urllib.parse import quote
 
 import re
 import transaction
@@ -192,4 +193,87 @@ class ShortUrlContainerViewTest(unittest.TestCase):
         # the batch navigation keeps the tab
         browser.getLink(url="b_start:int=20").click()
         self.assertIn("state=disabled", browser.url)
+        self.assertEqual(len(self.listedSuffixes(browser)), 2)
+
+    def search(self, browser, text, state=None):
+        url = self.container.absolute_url() + "?q=" + quote(text)
+        if state:
+            url += "&state=" + state
+        browser.open(url)
+        return self.listedSuffixes(browser)
+
+    def test_search_by_suffix_prefix(self):
+        browser = self.browser("alice")
+        self.assertEqual(self.search(browser, "ALI"), ["alice2", "Alice1"])
+        self.assertEqual(self.search(browser, "alice1"), ["Alice1"])
+        # the search text stays in the field
+        self.assertIn('value="alice1"', browser.contents)
+
+    def test_search_only_visible(self):
+        self.assertEqual(self.search(self.browser("bob"), "alice"), [])
+        self.assertEqual(self.search(self.browser("moderator"), "b"), ["bob1"])
+
+    def test_search_by_short_url(self):
+        api.portal.set_registry_record("mbarde.shorturls.base_url", "https://go.example.org")
+        transaction.commit()
+        browser = self.browser("alice")
+        self.assertEqual(self.search(browser, "https://go.example.org/ALICE1"), ["Alice1"])
+        # not a prefix match
+        self.assertEqual(self.search(browser, "https://go.example.org/alice"), [])
+
+    def test_search_by_target_url_prefix(self):
+        browser = self.browser("moderator")
+        self.assertEqual(
+            self.search(browser, "https://www.plone.org/"), ["bob1", "alice2", "Alice1"]
+        )
+        self.assertEqual(self.search(browser, "https://www.plone.org/alice"), ["alice2"])
+        self.assertEqual(self.search(browser, "https://www.plone.org/b"), ["bob1"])
+        self.assertEqual(self.search(browser, "https://example.org/"), [])
+
+    def test_search_no_matches(self):
+        browser = self.browser("alice")
+        self.search(browser, "nothing")
+        self.assertIn('id="short-urls-no-matches"', browser.contents)
+        self.assertNotIn('id="short-urls-empty"', browser.contents)
+        self.assertIn('id="short-url-search-reset"', browser.contents)
+        browser.getLink(id="short-url-search-reset").click()
+        self.assertEqual(self.listedSuffixes(browser), ["alice2", "Alice1"])
+
+    def test_search_form(self):
+        browser = self.browser("alice")
+        browser.open(self.container.absolute_url())
+        self.assertNotIn('id="short-url-search-reset"', browser.contents)
+        form = browser.getForm(id="short-url-search")
+        form.getControl(name="q").value = "alice2"
+        form.submit()
+        self.assertEqual(self.listedSuffixes(browser), ["alice2"])
+
+    def test_search_in_disabled_tab(self):
+        self.disable("alice2")
+        browser = self.browser("alice")
+        self.assertEqual(self.search(browser, "alice"), ["Alice1"])
+        self.assertEqual(self.tabCount(browser, "active"), 1)
+        self.assertEqual(self.tabCount(browser, "disabled"), 1)
+        # switching tabs keeps the search
+        browser.getLink(id="short-url-tab-disabled").click()
+        self.assertEqual(self.listedSuffixes(browser), ["alice2"])
+        self.search(browser, "Alice1", state="disabled")
+        self.assertIn('id="short-urls-no-matches"', browser.contents)
+        self.assertEqual(self.tabCount(browser, "active"), 1)
+        self.assertEqual(self.tabCount(browser, "disabled"), 0)
+        # the form keeps the tab
+        form = browser.getForm(id="short-url-search")
+        form.getControl(name="q").value = "alice2"
+        form.submit()
+        self.assertEqual(self.listedSuffixes(browser), ["alice2"])
+
+    def test_search_batching(self):
+        for i in range(22):
+            self.createShortUrl("alice", "many{0:02d}".format(i), day=10 + i % 20)
+        logout()
+        transaction.commit()
+        browser = self.browser("alice")
+        self.assertEqual(len(self.search(browser, "many")), 20)
+        browser.getLink(url="b_start:int=20").click()
+        self.assertIn("q=many", browser.url)
         self.assertEqual(len(self.listedSuffixes(browser)), 2)
