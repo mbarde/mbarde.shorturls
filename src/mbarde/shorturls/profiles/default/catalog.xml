@@ -4,4 +4,8 @@
   <index name="shorturl_suffix" meta_type="FieldIndex">
     <indexed_attr value="shorturl_suffix" />
   </index>
+  <!-- exact target url, see content/short_url.py -->
+  <index name="shorturl_target_url" meta_type="FieldIndex">
+    <indexed_attr value="shorturl_target_url" />
+  </index>
 </object>

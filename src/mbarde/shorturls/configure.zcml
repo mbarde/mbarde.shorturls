@@ -52,6 +52,12 @@
     name="shorturl_suffix"
   />
 
+  <!-- target url, to find existing short urls for it -->
+  <adapter
+    factory=".content.short_url.targetUrlIndexer"
+    name="shorturl_target_url"
+  />
+
   <!-- suffix has to be unique: add/edit forms and plone.restapi -->
   <adapter factory=".content.short_url.SuffixValidator" />
   <adapter factory=".content.short_url.SuffixDeserializer" />

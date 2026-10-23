@@ -268,6 +268,11 @@ def suffixIndexer(obj):
     return normalizeSuffix(obj.suffix or "")
 
 
+@indexer(IShortUrl)
+def targetUrlIndexer(obj):
+    return obj.target_url or ""
+
+
 def findShortUrlBySuffix(suffix):
     """Return the catalog brain of the short url with the given suffix
     (matched case-insensitively), regardless of permissions and state."""

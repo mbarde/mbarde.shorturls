@@ -115,6 +115,21 @@ class ShortUrlIntegrationTest(unittest.TestCase):
         self.assertIsNone(findShortUrlBySuffix("old"))
         self.assertEqual(findShortUrlBySuffix("new").UID, obj.UID())
 
+    def test_find_by_target_url(self):
+        obj = self.createShortUrl("one", target_url="https://www.plone.org/a")
+        self.createShortUrl("two", target_url="https://www.plone.org/b")
+        catalog = api.portal.get_tool("portal_catalog")
+
+        def search(target_url):
+            return [b.UID for b in catalog(shorturl_target_url=target_url)]
+
+        self.assertEqual(search("https://www.plone.org/a"), [obj.UID()])
+        self.assertEqual(search("https://www.plone.org/c"), [])
+        obj.target_url = "https://www.plone.org/c"
+        obj.reindexObject()
+        self.assertEqual(search("https://www.plone.org/a"), [])
+        self.assertEqual(search("https://www.plone.org/c"), [obj.UID()])
+
     def test_suffix_constraint(self):
         field = IShortUrl["suffix"]
         for value in ("abc", "00CLH", "bas_ss24", "zfl-faq", "id"):
@@ -195,6 +210,19 @@ class ShortUrlRestApiTest(unittest.TestCase):
         obj = self.portal.s["apiurl"]
         self.assertTrue(obj.is_api)
         self.assertEqual(obj.clicks, 0)
+
+    def test_search_by_target_url(self):
+        url = "https://www.plone.org/news"
+        response = self.post(suffix="news", target_url=url)
+        self.assertEqual(response.status_code, 201, response.text)
+        self.post(suffix="other", target_url=url + "/other")
+        response = self.api_session.get(
+            self.portal.absolute_url() + "/s/@search",
+            params={"portal_type": "ShortUrl", "shorturl_target_url": url},
+        )
+        self.assertEqual(response.status_code, 200, response.text)
+        items = response.json()["items"]
+        self.assertEqual([item["@id"] for item in items], [self.portal.absolute_url() + "/s/news"])
 
     def test_readonly_fields_ignored(self):
         response = self.post(
